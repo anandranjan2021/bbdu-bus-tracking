@@ -1964,18 +1964,19 @@ function checkAutomaticStops(
    SIMULATION MODE
 ========================================================= */
 
+/* =========================================================
+   SIMULATION MODE
+========================================================= */
+
 simulateBtn.addEventListener(
   "click",
-  function(){
+  async function(){
 
-    let nextStop =
+    const nextStop =
       R1_STOPS.find(
         stop =>
-          !reachedStops.includes(
-            stop.number
-          )
+          !reachedStops.includes(stop.number)
       );
-
 
     if(!nextStop){
 
@@ -1988,61 +1989,74 @@ simulateBtn.addEventListener(
 
     }
 
+    // Add the next stop locally first
+    reachedStops.push(nextStop.number);
 
-    reachedStops.push(
-  nextStop.number
-);
+    // Immediately update Driver display
+    updateStopDisplays();
 
-updateStopDisplays();
-
-// Send reached stop information to Firebase
-set(
-  ref(
-    db,
-    "buses/" + selectedBus
-  ),
-  {
-    busNumber:
-      selectedBus,
-
-    driver:
-      getSelectedBus()?.driver ||
-      "Unknown",
-
-    route:
-      "R1",
-
-    reachedStops:
-      reachedStops,
-
-    tracking:
-      true,
-
-    lastUpdated:
-      serverTimestamp()
-  }
-).catch(error => {
-
-  console.error(
-    "Simulation Firebase update error:",
-    error
-  );
-
-});
-  
-setDriverStatus(
-
+    // Show simulation status
+    setDriverStatus(
       "🧪 Simulation: " +
+      nextStop.number +
+      " " +
       nextStop.name +
       " reached.",
-
       "live"
-
     );
+
+    // Send complete stop progress to Firebase
+    try{
+
+      await set(
+        ref(
+          db,
+          "buses/" + selectedBus
+        ),
+        {
+          busNumber:
+            selectedBus,
+
+          driver:
+            getSelectedBus()?.driver ||
+            "Unknown",
+
+          route:
+            "R1",
+
+          reachedStops:
+            [...reachedStops],
+
+          tracking:
+            true,
+
+          lastUpdated:
+            serverTimestamp()
+        }
+      );
+
+      console.log(
+        "Simulation saved to Firebase:",
+        reachedStops
+      );
+
+    }
+    catch(error){
+
+      console.error(
+        "Simulation Firebase error:",
+        error
+      );
+
+      setDriverStatus(
+        "⚠️ Stop reached locally, but Firebase update failed.",
+        "error"
+      );
+
+    }
 
   }
 );
-
 
 /* =========================================================
    BUTTON EVENTS
