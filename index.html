@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -742,28 +741,14 @@ import {
 ========================================================= */
 
 const firebaseConfig = {
-
-  apiKey:
-    "AIzaSyCYxKkVwjPg34LZAUMpy2JVUEwSqoog1gg",
-
-  authDomain:
-    "bbd-university-bus-tracking.firebaseapp.com",
-
-  projectId:
-    "bbd-university-bus-tracking",
-
-  storageBucket:
-    "bbd-university-bus-tracking.firebasestorage.app",
-
-  messagingSenderId:
-    "129079902370",
-
-  appId:
-    "1:129079902370:web:d199b94c96e9f2e25617fb",
-
-  measurementId:
-    "G-TBFGT7FXEJ"
-
+  apiKey: "AIzaSyCYxKkVwjPg34LZAUMpy2JVUEwSqoog1gg",
+  authDomain: "bbd-university-bus-tracking.firebaseapp.com",
+  projectId: "bbd-university-bus-tracking",
+  databaseURL: "https://bbd-university-bus-tracking-default-rtdb.asia-southeast1.firebasedatabase.app/",
+  storageBucket: "bbd-university-bus-tracking.firebasestorage.app",
+  messagingSenderId: "129079902370",
+  appId: "1:129079902370:web:d199b94c96e9f2e25617fb",
+  measurementId: "G-TBFGT7FXEJ"
 };
 
 
@@ -771,8 +756,7 @@ const app =
   initializeApp(firebaseConfig);
 
 
-const db =
-  getDatabase(app);
+const db = getDatabase(app, firebaseConfig.databaseURL);
 
 
 /* =========================================================
