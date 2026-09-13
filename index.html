@@ -1,1 +1,2384 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
+
+<title>BBD University Bus Tracking System</title>
+
+<style>
+
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  font-family:Arial,Helvetica,sans-serif;
+  background:#f3f6fa;
+  color:#172033;
+}
+
+header{
+  background:linear-gradient(135deg,#123c69,#1769aa);
+  color:white;
+  padding:20px 15px;
+  text-align:center;
+}
+
+header h1{
+  margin:0;
+  font-size:24px;
+}
+
+header p{
+  margin:7px 0 0;
+  font-size:14px;
+}
+
+.container{
+  max-width:1100px;
+  margin:auto;
+  padding:15px;
+}
+
+.stats{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:12px;
+  margin-bottom:15px;
+}
+
+.stat{
+  background:white;
+  border-radius:12px;
+  padding:15px;
+  text-align:center;
+  box-shadow:0 2px 8px rgba(0,0,0,.08);
+}
+
+.stat strong{
+  display:block;
+  font-size:25px;
+  margin-bottom:5px;
+}
+
+.card{
+  background:white;
+  border-radius:14px;
+  padding:18px;
+  margin-bottom:15px;
+  box-shadow:0 2px 9px rgba(0,0,0,.08);
+}
+
+.card h2{
+  margin-top:0;
+  font-size:19px;
+}
+
+.controls{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:12px;
+}
+
+label{
+  font-weight:bold;
+  font-size:14px;
+  display:block;
+  margin-bottom:6px;
+}
+
+select,
+input,
+button{
+  width:100%;
+  padding:11px;
+  border-radius:8px;
+  border:1px solid #cbd5e1;
+  font-size:15px;
+}
+
+button{
+  border:none;
+  cursor:pointer;
+  font-weight:bold;
+  margin-top:8px;
+}
+
+.primary{
+  background:#1769aa;
+  color:white;
+}
+
+.success{
+  background:#18864b;
+  color:white;
+}
+
+.danger{
+  background:#c62828;
+  color:white;
+}
+
+.warning{
+  background:#e08b00;
+  color:white;
+}
+
+button:disabled{
+  opacity:.55;
+  cursor:not-allowed;
+}
+
+.status{
+  padding:11px;
+  border-radius:8px;
+  margin:10px 0;
+  background:#eef2f7;
+  font-size:14px;
+}
+
+.status.live{
+  background:#e4f7eb;
+  color:#126b39;
+}
+
+.status.error{
+  background:#fdeaea;
+  color:#a51d1d;
+}
+
+.status.warning{
+  background:#fff4dc;
+  color:#875500;
+}
+
+.hidden{
+  display:none;
+}
+
+.info-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:10px;
+}
+
+.info{
+  background:#f6f8fb;
+  padding:12px;
+  border-radius:8px;
+}
+
+.info span{
+  display:block;
+  font-size:12px;
+  color:#667085;
+  margin-bottom:4px;
+}
+
+.info strong{
+  font-size:15px;
+}
+
+.stop-list{
+  max-height:500px;
+  overflow:auto;
+  border:1px solid #e1e6ed;
+  border-radius:10px;
+}
+
+.stop{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:11px;
+  border-bottom:1px solid #edf0f4;
+}
+
+.stop:last-child{
+  border-bottom:none;
+}
+
+.stop-number{
+  min-width:32px;
+  height:32px;
+  border-radius:50%;
+  background:#e7edf5;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:bold;
+  font-size:13px;
+}
+
+.stop.reached{
+  background:#e7f7ed;
+}
+
+.stop.reached .stop-number{
+  background:#18864b;
+  color:white;
+}
+
+.stop-name{
+  flex:1;
+  font-size:14px;
+}
+
+.stop-status{
+  font-size:12px;
+  color:#667085;
+}
+
+.progress{
+  width:100%;
+  height:12px;
+  background:#e6eaf0;
+  border-radius:10px;
+  overflow:hidden;
+  margin:10px 0;
+}
+
+.progress-bar{
+  height:100%;
+  width:0%;
+  background:#1769aa;
+  transition:.3s;
+}
+
+.map-box{
+  background:#edf3f8;
+  border-radius:12px;
+  padding:20px;
+  text-align:center;
+  margin-top:12px;
+}
+
+.map-route{
+  font-weight:bold;
+  color:#1769aa;
+  line-height:2;
+}
+
+.footer{
+  text-align:center;
+  padding:20px;
+  color:#667085;
+  font-size:12px;
+}
+
+.firebase-dot{
+  display:inline-block;
+  width:10px;
+  height:10px;
+  border-radius:50%;
+  background:#999;
+  margin-right:6px;
+}
+
+.firebase-dot.online{
+  background:#18a957;
+}
+
+.firebase-dot.offline{
+  background:#d22;
+}
+
+@media(max-width:700px){
+
+  .stats{
+    grid-template-columns:1fr 1fr 1fr;
+  }
+
+  .controls{
+    grid-template-columns:1fr;
+  }
+
+  .info-grid{
+    grid-template-columns:1fr;
+  }
+
+  header h1{
+    font-size:21px;
+  }
+
+}
+
+</style>
+</head>
+
+<body>
+
+<header>
+
+  <h1>🚌 BBD University</h1>
+
+  <p>
+    Bus Tracking System • Lucknow
+  </p>
+
+</header>
+
+
+<div class="container">
+
+  <!-- DASHBOARD -->
+
+  <div class="stats">
+
+    <div class="stat">
+      <strong id="totalBuses">10</strong>
+      Total Buses
+    </div>
+
+    <div class="stat">
+      <strong id="activeTrips">0</strong>
+      Active Trips
+    </div>
+
+    <div class="stat">
+      <strong>1</strong>
+      Routes
+    </div>
+
+  </div>
+
+
+  <!-- USER CONTROLS -->
+
+  <div class="card">
+
+    <h2>⚙️ System Controls</h2>
+
+    <div class="controls">
+
+      <div>
+
+        <label>User Mode</label>
+
+        <select id="userMode">
+
+          <option value="student">
+            Student / Passenger
+          </option>
+
+          <option value="driver">
+            Driver
+          </option>
+
+          <option value="admin">
+            Transport Admin
+          </option>
+
+        </select>
+
+      </div>
+
+
+      <div>
+
+        <label>Bus</label>
+
+        <select id="busSelect"></select>
+
+      </div>
+
+
+      <div>
+
+        <label>Route</label>
+
+        <select id="routeSelect">
+
+          <option value="R1">
+            R1 — Lucknow City → BBDU
+          </option>
+
+        </select>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- STUDENT PANEL -->
+
+  <div id="studentPanel">
+
+    <div class="card">
+
+      <h2>👩‍🎓 Student / Passenger View</h2>
+
+      <div id="firebaseStudentStatus"
+           class="status">
+
+        <span class="firebase-dot"></span>
+        Connecting to Firebase...
+
+      </div>
+
+
+      <div class="info-grid">
+
+        <div class="info">
+          <span>Bus</span>
+          <strong id="studentBus">--</strong>
+        </div>
+
+        <div class="info">
+          <span>Driver</span>
+          <strong id="studentDriver">--</strong>
+        </div>
+
+        <div class="info">
+          <span>Route</span>
+          <strong id="studentRoute">--</strong>
+        </div>
+
+        <div class="info">
+          <span>Tracking</span>
+          <strong id="studentTracking">
+            Offline
+          </strong>
+        </div>
+
+        <div class="info">
+          <span>Latitude</span>
+          <strong id="studentLat">--</strong>
+        </div>
+
+        <div class="info">
+          <span>Longitude</span>
+          <strong id="studentLng">--</strong>
+        </div>
+
+      </div>
+
+
+      <div class="map-box">
+
+        <h3>📍 Live Bus Route</h3>
+
+        <div class="map-route">
+
+          Lucknow City
+          ↓
+          <br>
+
+          Airport / Chinhat Corridor
+          ↓
+          <br>
+
+          BBD University
+          🚌
+
+        </div>
+
+        <p>
+          Live geographic map will be added in the next phase.
+        </p>
+
+      </div>
+
+    </div>
+
+
+    <div class="card">
+
+      <h2>📍 R1 Stop List</h2>
+
+      <div id="studentStopList"
+           class="stop-list"></div>
+
+    </div>
+
+  </div>
+
+
+  <!-- DRIVER PANEL -->
+
+  <div id="driverPanel"
+       class="hidden">
+
+    <div class="card">
+
+      <h2>🚍 Driver Control Panel</h2>
+
+      <div id="driverStatus"
+           class="status">
+
+        GPS is not started.
+
+      </div>
+
+
+      <div class="controls">
+
+        <div>
+
+          <button id="startBtn"
+                  class="success">
+
+            📍 Start GPS Tracking
+
+          </button>
+
+        </div>
+
+        <div>
+
+          <button id="stopBtn"
+                  class="danger"
+                  disabled>
+
+            ⛔ Stop GPS Tracking
+
+          </button>
+
+        </div>
+
+        <div>
+
+          <button id="simulateBtn"
+                  class="warning">
+
+            🧪 Simulate Next Stop
+
+          </button>
+
+        </div>
+
+      </div>
+
+
+      <div class="info-grid"
+           style="margin-top:15px">
+
+        <div class="info">
+          <span>Bus Number</span>
+          <strong id="driverBus">--</strong>
+        </div>
+
+        <div class="info">
+          <span>Driver</span>
+          <strong id="driverName">--</strong>
+        </div>
+
+        <div class="info">
+          <span>Latitude</span>
+          <strong id="driverLat">--</strong>
+        </div>
+
+        <div class="info">
+          <span>Longitude</span>
+          <strong id="driverLng">--</strong>
+        </div>
+
+        <div class="info">
+          <span>GPS Accuracy</span>
+          <strong id="driverAccuracy">--</strong>
+        </div>
+
+        <div class="info">
+          <span>Last Update</span>
+          <strong id="driverUpdated">--</strong>
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="card">
+
+      <h2>🛣️ Route Progress</h2>
+
+      <div id="driverProgressText">
+        0 / 31 stops reached
+      </div>
+
+      <div class="progress">
+
+        <div id="progressBar"
+             class="progress-bar">
+        </div>
+
+      </div>
+
+      <div id="driverStopList"
+           class="stop-list"></div>
+
+    </div>
+
+  </div>
+
+
+  <!-- ADMIN PANEL -->
+
+  <div id="adminPanel"
+       class="hidden">
+
+    <div class="card">
+
+      <h2>🛠️ Transport Admin Dashboard</h2>
+
+      <div id="firebaseAdminStatus"
+           class="status">
+
+        Firebase status:
+        Checking...
+
+      </div>
+
+      <div class="info-grid">
+
+        <div class="info">
+
+          <span>Total Buses</span>
+
+          <strong id="adminTotalBuses">
+            10
+          </strong>
+
+        </div>
+
+        <div class="info">
+
+          <span>Active Trips</span>
+
+          <strong id="adminActiveTrips">
+            0
+          </strong>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="card">
+
+      <h2>➕ Add Bus</h2>
+
+      <label>
+        New Bus Number
+      </label>
+
+      <input
+        id="newBusNumber"
+        placeholder="Example: BBD-11">
+
+      <label style="margin-top:10px">
+        Driver Name
+      </label>
+
+      <input
+        id="newDriverName"
+        placeholder="Example: Driver 11">
+
+      <button
+        id="addBusBtn"
+        class="primary">
+
+        Add Bus
+
+      </button>
+
+    </div>
+
+
+    <div class="card">
+
+      <h2>🚌 Fleet Status</h2>
+
+      <div id="fleetList"></div>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<div class="footer">
+
+  BBD University Bus Tracking System
+  <br>
+  Version 2.1 • Development Build
+
+</div>
+
+
+<script type="module">
+
+/* =========================================================
+   FIREBASE IMPORTS
+========================================================= */
+
+import {
+  initializeApp
+} from
+"https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+
+
+import {
+  getDatabase,
+  ref,
+  set,
+  onValue,
+  serverTimestamp
+} from
+"https://www.gstatic.com/firebasejs/12.19.0/firebase-database.js";
+
+
+/* =========================================================
+   FIREBASE CONFIGURATION
+========================================================= */
+
+const firebaseConfig = {
+
+  apiKey:
+    "AIzaSyCYxKkVwjPg34LZAUMpy2JVUEwSqoog1gg",
+
+  authDomain:
+    "bbd-university-bus-tracking.firebaseapp.com",
+
+  projectId:
+    "bbd-university-bus-tracking",
+
+  storageBucket:
+    "bbd-university-bus-tracking.firebasestorage.app",
+
+  messagingSenderId:
+    "129079902370",
+
+  appId:
+    "1:129079902370:web:d199b94c96e9f2e25617fb",
+
+  measurementId:
+    "G-TBFGT7FXEJ"
+
+};
+
+
+const app =
+  initializeApp(firebaseConfig);
+
+
+const db =
+  getDatabase(app);
+
+
+/* =========================================================
+   R1 ROUTE
+   EXACT 31-STOP SEQUENCE
+========================================================= */
+
+const R1_STOPS = [
+
+  {
+    number:1,
+    name:"Scooter India Chauraha",
+    latitude:null,
+    longitude:null
+  },
+
+  {
+    number:2,
+    name:"Sarojini Nagar",
+    latitude:null,
+    longitude:null
+  },
+
+  {
+    number:3,
+    name:"Hydel",
+    latitude:null,
+    longitude:null
+  },
+
+  {
+    number:4,
+    name:"Sainik School",
+    latitude:null,
+    longitude:null
+  },
+
+  {
+    number:5,
+    name:"Shanti Nagar",
+    latitude:null,
+    longitude:null
+  },
+
+  {
+    number:6,
+    name:"Nadarganj Chauraha",
+    latitude:null,
+    longitude:null
+  },
+
+  {
+    number:7,
+    name:"Amausi Metro Station",
+    latitude:null,
+    longitude:null
+  },
+
+  {
+    number:8,
+    name:"Airport (VIP Terminal) Chauraha",
+    latitude:null,
+    longitude:null
+  },
+
+  {
+    number:9,
+    name:"Saheedpath Starting Point",
+    latitude:null,
+    longitude:null
+  },
+
+  {
+    number:10,
+    name:"Chungi",
+    latitude:null,
+    longitude:null
+  },
+
+  {
+    number:11,
+    name:"Vijay Nagar (Baldikhera)",
+    latitude:null,
+    longitude:null
+  },
+
+  {
+    number:12,
+    name:"Krishna Nagar Metro Station",
+    latitude:null,
+    longitude:null
+  },
+
+  {
+    number:13,
+    name:"The Piccadily Lucknow",
+    latitude:null,
+    longitude:null
+  },
+
+  {
+    number:14,
+    name:"Awadh Chauraha",
+    latitude:null,
+    longitude:null
+  },
+
+  {
+    number:15,
+    name:"Pakri Ka Pul",
+    latitude:null,
+    longitude:null
+  },
+
+  {
+    number:16,
+    name:"Eco Garden",
+    latitude:null,
+    longitude:null
+  },
+
+  {
+    number:17,
+    name:"Command Hospital",
+    latitude:null,
+    longitude:null
+  },
+
+  {
+    number:18,
+    name:"Loreto Convent College",
+    latitude:null,
+    longitude:null
+  },
+
+  {
+    number:19,
+    name:"Kalidas Chauraha",
+    latitude:null,
+    longitude:null
+  },
+
+  {
+    number:20,
+    name:"1090 Chauraha",
+    latitude:null,
+    longitude:null
+  },
+
+  {
+    number:21,
+    name:"Samta Mulak Chauraha",
+    latitude:null,
+    longitude:null
+  },
+
+  {
+    number:22,
+    name:"Fun Republic Mall",
+    latitude:null,
+    longitude:null
+  },
+
+  {
+    number:23,
+    name:"Lohia Park Chauraha",
+    latitude:null,
+    longitude:null
+  },
+
+  {
+    number:24,
+    name:"Lohiya Hospital",
+    latitude:null,
+    longitude:null
+  },
+
+  {
+    number:25,
+    name:"High Court Chauraha-2",
+    latitude:null,
+    longitude:null
+  },
+
+  {
+    number:26,
+    name:"Pari Mata Mandir",
+    latitude:null,
+    longitude:null
+  },
+
+  {
+    number:27,
+    name:"Chinhat Tiraha",
+    latitude:null,
+    longitude:null
+  },
+
+  {
+    number:28,
+    name:"Matyari Overbridge",
+    latitude:null,
+    longitude:null
+  },
+
+  {
+    number:29,
+    name:"BBDU Front Gate",
+    latitude:null,
+    longitude:null
+  },
+
+  {
+    number:30,
+    name:"BBDU EXIT GATE",
+    latitude:null,
+    longitude:null
+  },
+
+  {
+    number:31,
+    name:"BBD BUS STAND",
+    latitude:null,
+    longitude:null
+  }
+
+];
+
+
+/* =========================================================
+   BUS DATA
+========================================================= */
+
+let buses = [];
+
+for(let i=1;i<=10;i++){
+
+  buses.push({
+
+    busNumber:
+      "BBD-" +
+      String(i).padStart(2,"0"),
+
+    driver:
+      "Driver " + i,
+
+    route:"R1"
+
+  });
+
+}
+
+
+/* =========================================================
+   VARIABLES
+========================================================= */
+
+let selectedBus =
+  "BBD-01";
+
+let tracking =
+  false;
+
+let watchId =
+  null;
+
+let currentPosition =
+  null;
+
+let reachedStops =
+  [];
+
+let firebaseUnsubscribe =
+  null;
+
+const STOP_RADIUS_METERS =
+  150;
+
+
+/* =========================================================
+   DOM ELEMENTS
+========================================================= */
+
+const userMode =
+  document.getElementById("userMode");
+
+const busSelect =
+  document.getElementById("busSelect");
+
+const routeSelect =
+  document.getElementById("routeSelect");
+
+const studentPanel =
+  document.getElementById("studentPanel");
+
+const driverPanel =
+  document.getElementById("driverPanel");
+
+const adminPanel =
+  document.getElementById("adminPanel");
+
+const startBtn =
+  document.getElementById("startBtn");
+
+const stopBtn =
+  document.getElementById("stopBtn");
+
+const simulateBtn =
+  document.getElementById("simulateBtn");
+
+
+/* =========================================================
+   INITIALIZE BUS DROPDOWN
+========================================================= */
+
+function renderBusOptions(){
+
+  busSelect.innerHTML = "";
+
+  buses.forEach(bus => {
+
+    const option =
+      document.createElement("option");
+
+    option.value =
+      bus.busNumber;
+
+    option.textContent =
+      bus.busNumber +
+      " — " +
+      bus.driver;
+
+    busSelect.appendChild(option);
+
+  });
+
+  busSelect.value =
+    selectedBus;
+
+}
+
+
+/* =========================================================
+   RENDER STUDENT STOPS
+========================================================= */
+
+function renderStudentStops(){
+
+  const container =
+    document.getElementById(
+      "studentStopList"
+    );
+
+  container.innerHTML = "";
+
+  R1_STOPS.forEach(stop => {
+
+    const div =
+      document.createElement("div");
+
+    div.className =
+      "stop";
+
+    div.id =
+      "student-stop-" +
+      stop.number;
+
+    div.innerHTML = `
+
+      <div class="stop-number">
+        ${stop.number}
+      </div>
+
+      <div class="stop-name">
+        ${stop.name}
+      </div>
+
+      <div class="stop-status">
+        Upcoming
+      </div>
+
+    `;
+
+    container.appendChild(div);
+
+  });
+
+}
+
+
+/* =========================================================
+   RENDER DRIVER STOPS
+========================================================= */
+
+function renderDriverStops(){
+
+  const container =
+    document.getElementById(
+      "driverStopList"
+    );
+
+  container.innerHTML = "";
+
+  R1_STOPS.forEach(stop => {
+
+    const div =
+      document.createElement("div");
+
+    div.className =
+      "stop";
+
+    div.id =
+      "driver-stop-" +
+      stop.number;
+
+    div.innerHTML = `
+
+      <div class="stop-number">
+        ${stop.number}
+      </div>
+
+      <div class="stop-name">
+        ${stop.name}
+      </div>
+
+      <div class="stop-status">
+        Upcoming
+      </div>
+
+    `;
+
+    container.appendChild(div);
+
+  });
+
+}
+
+
+/* =========================================================
+   UPDATE STOP DISPLAY
+========================================================= */
+
+function updateStopDisplays(){
+
+  R1_STOPS.forEach(stop => {
+
+    const reached =
+      reachedStops.includes(
+        stop.number
+      );
+
+    const studentElement =
+      document.getElementById(
+        "student-stop-" +
+        stop.number
+      );
+
+    const driverElement =
+      document.getElementById(
+        "driver-stop-" +
+        stop.number
+      );
+
+
+    if(studentElement){
+
+      studentElement.classList.toggle(
+        "reached",
+        reached
+      );
+
+      const status =
+        studentElement.querySelector(
+          ".stop-status"
+        );
+
+      status.textContent =
+        reached ?
+        "✓ Reached" :
+        "Upcoming";
+
+    }
+
+
+    if(driverElement){
+
+      driverElement.classList.toggle(
+        "reached",
+        reached
+      );
+
+      const status =
+        driverElement.querySelector(
+          ".stop-status"
+        );
+
+      status.textContent =
+        reached ?
+        "✓ Reached" :
+        "Upcoming";
+
+    }
+
+  });
+
+
+  const count =
+    reachedStops.length;
+
+  const total =
+    R1_STOPS.length;
+
+  document.getElementById(
+    "driverProgressText"
+  ).textContent =
+    count +
+    " / " +
+    total +
+    " stops reached";
+
+
+  document.getElementById(
+    "progressBar"
+  ).style.width =
+    ((count / total) * 100) +
+    "%";
+
+}
+
+
+/* =========================================================
+   USER MODE
+========================================================= */
+
+userMode.addEventListener(
+  "change",
+  function(){
+
+    const mode =
+      this.value;
+
+
+    studentPanel.classList.add(
+      "hidden"
+    );
+
+    driverPanel.classList.add(
+      "hidden"
+    );
+
+    adminPanel.classList.add(
+      "hidden"
+    );
+
+
+    if(mode === "student"){
+
+      studentPanel.classList.remove(
+        "hidden"
+      );
+
+      subscribeToBus();
+
+    }
+
+
+    if(mode === "driver"){
+
+      driverPanel.classList.remove(
+        "hidden"
+      );
+
+      updateDriverInformation();
+
+    }
+
+
+    if(mode === "admin"){
+
+      adminPanel.classList.remove(
+        "hidden"
+      );
+
+      renderFleet();
+
+    }
+
+  }
+);
+
+
+/* =========================================================
+   BUS CHANGE
+========================================================= */
+
+busSelect.addEventListener(
+  "change",
+  function(){
+
+    selectedBus =
+      this.value;
+
+    reachedStops =
+      [];
+
+    updateStopDisplays();
+
+    updateDriverInformation();
+
+    subscribeToBus();
+
+  }
+);
+
+
+/* =========================================================
+   DRIVER INFORMATION
+========================================================= */
+
+function getSelectedBus(){
+
+  return buses.find(
+    bus =>
+      bus.busNumber ===
+      selectedBus
+  );
+
+}
+
+
+function updateDriverInformation(){
+
+  const bus =
+    getSelectedBus();
+
+  if(!bus)
+    return;
+
+  document.getElementById(
+    "driverBus"
+  ).textContent =
+    bus.busNumber;
+
+  document.getElementById(
+    "driverName"
+  ).textContent =
+    bus.driver;
+
+}
+
+
+/* =========================================================
+   START GPS TRACKING
+========================================================= */
+
+function startTracking(){
+
+  if(!navigator.geolocation){
+
+    setDriverStatus(
+      "GPS is not supported by this browser.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  if(tracking)
+    return;
+
+
+  tracking =
+    true;
+
+  startBtn.disabled =
+    true;
+
+  stopBtn.disabled =
+    false;
+
+
+  setDriverStatus(
+    "Requesting GPS permission..."
+  );
+
+
+  watchId =
+    navigator.geolocation.watchPosition(
+
+      handlePosition,
+
+      handleGpsError,
+
+      {
+
+        enableHighAccuracy:true,
+
+        maximumAge:5000,
+
+        timeout:15000
+
+      }
+
+    );
+
+}
+
+
+/* =========================================================
+   GPS POSITION
+========================================================= */
+
+function handlePosition(position){
+
+  currentPosition =
+    position;
+
+
+  const latitude =
+    position.coords.latitude;
+
+  const longitude =
+    position.coords.longitude;
+
+  const accuracy =
+    position.coords.accuracy;
+
+
+  document.getElementById(
+    "driverLat"
+  ).textContent =
+    latitude.toFixed(6);
+
+  document.getElementById(
+    "driverLng"
+  ).textContent =
+    longitude.toFixed(6);
+
+  document.getElementById(
+    "driverAccuracy"
+  ).textContent =
+    Math.round(accuracy) +
+    " meters";
+
+
+  document.getElementById(
+    "driverUpdated"
+  ).textContent =
+    new Date().toLocaleTimeString();
+
+
+  setDriverStatus(
+    "🟢 GPS Live • Accuracy: " +
+    Math.round(accuracy) +
+    " meters",
+    "live"
+  );
+
+
+  updateBusInFirebase(
+    latitude,
+    longitude,
+    accuracy
+  );
+
+
+  checkAutomaticStops(
+    latitude,
+    longitude
+  );
+
+}
+
+
+/* =========================================================
+   GPS ERROR
+========================================================= */
+
+function handleGpsError(error){
+
+  let message =
+    "GPS error.";
+
+
+  if(error.code === 1){
+
+    message =
+      "⚠️ GPS permission denied. This preview may not allow location access. Open the app in Chrome using HTTPS.";
+
+  }
+
+  else if(error.code === 2){
+
+    message =
+      "⚠️ GPS position unavailable. Turn ON phone Location/GPS.";
+
+  }
+
+  else if(error.code === 3){
+
+    message =
+      "⚠️ GPS request timed out. Please try again outdoors.";
+
+  }
+
+
+  setDriverStatus(
+    message,
+    "error"
+  );
+
+}
+
+
+/* =========================================================
+   DRIVER STATUS
+========================================================= */
+
+function setDriverStatus(
+  message,
+  type=""
+){
+
+  const element =
+    document.getElementById(
+      "driverStatus"
+    );
+
+  element.textContent =
+    message;
+
+  element.className =
+    "status " +
+    type;
+
+}
+
+
+/* =========================================================
+   STOP GPS
+========================================================= */
+
+async function stopTracking(){
+
+  tracking =
+    false;
+
+
+  if(watchId !== null){
+
+    navigator.geolocation.clearWatch(
+      watchId
+    );
+
+    watchId =
+      null;
+
+  }
+
+
+  startBtn.disabled =
+    false;
+
+  stopBtn.disabled =
+    true;
+
+
+  setDriverStatus(
+    "GPS tracking stopped.",
+    "warning"
+  );
+
+
+  try{
+
+    await set(
+
+      ref(
+        db,
+        "buses/" +
+        selectedBus
+      ),
+
+      {
+
+        busNumber:
+          selectedBus,
+
+        driver:
+          getSelectedBus()?.driver ||
+          "Unknown",
+
+        route:
+          "R1",
+
+        tracking:
+          false,
+
+        lastUpdated:
+          serverTimestamp()
+
+      }
+
+    );
+
+  }
+  catch(error){
+
+    console.error(error);
+
+  }
+
+}
+
+
+/* =========================================================
+   FIREBASE BUS UPDATE
+========================================================= */
+
+async function updateBusInFirebase(
+  latitude,
+  longitude,
+  accuracy
+){
+
+  const bus =
+    getSelectedBus();
+
+  if(!bus)
+    return;
+
+
+  try{
+
+    await set(
+
+      ref(
+        db,
+        "buses/" +
+        selectedBus
+      ),
+
+      {
+
+        busNumber:
+          bus.busNumber,
+
+        driver:
+          bus.driver,
+
+        route:
+          "R1",
+
+        latitude:
+          latitude,
+
+        longitude:
+          longitude,
+
+        accuracy:
+          accuracy,
+
+        tracking:
+          true,
+
+        lastUpdated:
+          serverTimestamp()
+
+      }
+
+    );
+
+  }
+  catch(error){
+
+    console.error(
+      "Firebase write error:",
+      error
+    );
+
+    setDriverStatus(
+      "GPS is working, but Firebase update failed.",
+      "error"
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   STUDENT FIREBASE SUBSCRIPTION
+========================================================= */
+
+function subscribeToBus(){
+
+  if(firebaseUnsubscribe){
+
+    firebaseUnsubscribe();
+
+    firebaseUnsubscribe =
+      null;
+
+  }
+
+
+  const busRef =
+    ref(
+      db,
+      "buses/" +
+      selectedBus
+    );
+
+
+  firebaseUnsubscribe =
+    onValue(
+
+      busRef,
+
+      snapshot => {
+
+        const data =
+          snapshot.val();
+
+
+        if(!data){
+
+          document.getElementById(
+            "firebaseStudentStatus"
+          ).innerHTML = `
+
+            <span class="firebase-dot offline"></span>
+            No live data for ${selectedBus}
+
+          `;
+
+          return;
+
+        }
+
+
+        document.getElementById(
+          "firebaseStudentStatus"
+        ).innerHTML = `
+
+          <span class="firebase-dot online"></span>
+          Firebase Connected • Live data received
+
+        `;
+
+
+        document.getElementById(
+          "studentBus"
+        ).textContent =
+          data.busNumber ||
+          selectedBus;
+
+
+        document.getElementById(
+          "studentDriver"
+        ).textContent =
+          data.driver ||
+          "--";
+
+
+        document.getElementById(
+          "studentRoute"
+        ).textContent =
+          data.route ||
+          "R1";
+
+
+        document.getElementById(
+          "studentTracking"
+        ).textContent =
+          data.tracking ?
+          "🟢 LIVE" :
+          "Offline";
+
+
+        document.getElementById(
+          "studentLat"
+        ).textContent =
+          typeof data.latitude ===
+          "number"
+          ?
+          data.latitude.toFixed(6)
+          :
+          "--";
+
+
+        document.getElementById(
+          "studentLng"
+        ).textContent =
+          typeof data.longitude ===
+          "number"
+          ?
+          data.longitude.toFixed(6)
+          :
+          "--";
+
+      },
+
+      error => {
+
+        console.error(
+          "Firebase read error:",
+          error
+        );
+
+
+        document.getElementById(
+          "firebaseStudentStatus"
+        ).innerHTML = `
+
+          <span class="firebase-dot offline"></span>
+          Firebase connection error
+
+        `;
+
+      }
+
+    );
+
+}
+
+
+/* =========================================================
+   DISTANCE CALCULATION
+========================================================= */
+
+function distanceMeters(
+  lat1,
+  lon1,
+  lat2,
+  lon2
+){
+
+  const earthRadius =
+    6371000;
+
+
+  const p1 =
+    lat1 *
+    Math.PI /
+    180;
+
+  const p2 =
+    lat2 *
+    Math.PI /
+    180;
+
+
+  const dLat =
+    (lat2-lat1) *
+    Math.PI /
+    180;
+
+
+  const dLon =
+    (lon2-lon1) *
+    Math.PI /
+    180;
+
+
+  const a =
+    Math.sin(dLat/2) *
+    Math.sin(dLat/2)
+    +
+    Math.cos(p1) *
+    Math.cos(p2) *
+    Math.sin(dLon/2) *
+    Math.sin(dLon/2);
+
+
+  const c =
+    2 *
+    Math.atan2(
+      Math.sqrt(a),
+      Math.sqrt(1-a)
+    );
+
+
+  return earthRadius * c;
+
+}
+
+
+/* =========================================================
+   AUTOMATIC STOP DETECTION
+========================================================= */
+
+function checkAutomaticStops(
+  latitude,
+  longitude
+){
+
+  for(
+    const stop of R1_STOPS
+  ){
+
+    if(
+      stop.latitude === null ||
+      stop.longitude === null
+    ){
+
+      continue;
+
+    }
+
+
+    if(
+      reachedStops.includes(
+        stop.number
+      )
+    ){
+
+      continue;
+
+    }
+
+
+    const distance =
+      distanceMeters(
+
+        latitude,
+        longitude,
+
+        stop.latitude,
+        stop.longitude
+
+      );
+
+
+    if(
+      distance <=
+      STOP_RADIUS_METERS
+    ){
+
+      reachedStops.push(
+        stop.number
+      );
+
+      updateStopDisplays();
+
+      break;
+
+    }
+
+  }
+
+}
+
+
+/* =========================================================
+   SIMULATION MODE
+========================================================= */
+
+simulateBtn.addEventListener(
+  "click",
+  function(){
+
+    let nextStop =
+      R1_STOPS.find(
+        stop =>
+          !reachedStops.includes(
+            stop.number
+          )
+      );
+
+
+    if(!nextStop){
+
+      setDriverStatus(
+        "🎉 All 31 stops reached.",
+        "live"
+      );
+
+      return;
+
+    }
+
+
+    reachedStops.push(
+      nextStop.number
+    );
+
+
+    updateStopDisplays();
+
+
+    setDriverStatus(
+
+      "🧪 Simulation: " +
+      nextStop.name +
+      " reached.",
+
+      "live"
+
+    );
+
+  }
+);
+
+
+/* =========================================================
+   BUTTON EVENTS
+========================================================= */
+
+startBtn.addEventListener(
+  "click",
+  startTracking
+);
+
+
+stopBtn.addEventListener(
+  "click",
+  stopTracking
+);
+
+
+/* =========================================================
+   ADMIN — ADD BUS
+========================================================= */
+
+document.getElementById(
+  "addBusBtn"
+).addEventListener(
+
+  "click",
+
+  function(){
+
+    const number =
+      document.getElementById(
+        "newBusNumber"
+      ).value.trim();
+
+    const driver =
+      document.getElementById(
+        "newDriverName"
+      ).value.trim();
+
+
+    if(!number){
+
+      alert(
+        "Please enter a bus number."
+      );
+
+      return;
+
+    }
+
+
+    buses.push({
+
+      busNumber:
+        number,
+
+      driver:
+        driver ||
+        "Driver",
+
+      route:
+        "R1"
+
+    });
+
+
+    renderBusOptions();
+
+    renderFleet();
+
+
+    document.getElementById(
+      "newBusNumber"
+    ).value = "";
+
+
+    document.getElementById(
+      "newDriverName"
+    ).value = "";
+
+
+    alert(
+      "Bus added successfully."
+    );
+
+  }
+
+);
+
+
+/* =========================================================
+   ADMIN FLEET
+========================================================= */
+
+function renderFleet(){
+
+  const container =
+    document.getElementById(
+      "fleetList"
+    );
+
+  container.innerHTML = "";
+
+
+  buses.forEach(
+    bus => {
+
+      const row =
+        document.createElement(
+          "div"
+        );
+
+      row.className =
+        "info";
+
+      row.style.marginBottom =
+        "8px";
+
+
+      row.innerHTML = `
+
+        <strong>
+          🚌 ${bus.busNumber}
+        </strong>
+
+        <br>
+
+        Driver:
+        ${bus.driver}
+
+        <br>
+
+        Route:
+        ${bus.route}
+
+        <br>
+
+        <span id="fleet-${bus.busNumber}">
+          Checking live status...
+        </span>
+
+      `;
+
+
+      container.appendChild(
+        row
+      );
+
+
+      const busRef =
+        ref(
+          db,
+          "buses/" +
+          bus.busNumber
+        );
+
+
+      onValue(
+        busRef,
+        snapshot => {
+
+          const data =
+            snapshot.val();
+
+
+          const element =
+            document.getElementById(
+              "fleet-" +
+              bus.busNumber
+            );
+
+
+          if(!element)
+            return;
+
+
+          if(
+            data &&
+            data.tracking
+          ){
+
+            element.textContent =
+              "🟢 GPS LIVE";
+
+          }
+          else{
+
+            element.textContent =
+              "⚪ Not tracking";
+
+          }
+
+        }
+      );
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   INITIALIZE
+========================================================= */
+
+renderBusOptions();
+
+renderStudentStops();
+
+renderDriverStops();
+
+updateDriverInformation();
+
+updateStopDisplays();
+
+subscribeToBus();
+
+
+/* =========================================================
+   ACTIVE TRIP MONITOR
+========================================================= */
+
+onValue(
+
+  ref(db,"buses"),
+
+  snapshot => {
+
+    const data =
+      snapshot.val();
+
+
+    let active =
+      0;
+
+
+    if(data){
+
+      Object.values(data)
+        .forEach(bus => {
+
+          if(
+            bus.tracking === true
+          ){
+
+            active++;
+
+          }
+
+        });
+
+    }
+
+
+    document.getElementById(
+      "activeTrips"
+    ).textContent =
+      active;
+
+
+    document.getElementById(
+      "adminActiveTrips"
+    ).textContent =
+      active;
+
+
+    document.getElementById(
+      "adminTotalBuses"
+    ).textContent =
+      buses.length;
+
+
+    document.getElementById(
+      "totalBuses"
+    ).textContent =
+      buses.length;
+
+
+    document.getElementById(
+      "firebaseAdminStatus"
+    ).textContent =
+      "🟢 Firebase connected";
+
+  },
+
+  error => {
+
+    console.error(error);
+
+    document.getElementById(
+      "firebaseAdminStatus"
+    ).textContent =
+      "🔴 Firebase connection error";
+
+  }
+
+);
+
+
+</script>
+
+</body>
+</html>
