@@ -921,7 +921,10 @@ const R1_STOPS = [
     lng: 81.05780
   }
 ];
-
+// Automatically assign stop numbers 1–31
+R1_STOPS.forEach((stop, index) => {
+  stop.number = index + 1;
+});
 /* =========================================================
    BUS DATA
 ========================================================= */
@@ -1718,7 +1721,13 @@ function subscribeToBus(){
 
         const data =
           snapshot.val();
+// Receive reached stops from Firebase
+reachedStops =
+  Array.isArray(data?.reachedStops)
+  ? data.reachedStops
+  : [];
 
+updateStopDisplays();
 
         if(!data){
 
@@ -1897,13 +1906,15 @@ function checkAutomaticStops(
   ){
 
     if(
-      stop.latitude === null ||
-      stop.longitude === null
-    ){
+  stop.lat === null ||
+  stop.lng === null ||
+  typeof stop.lat !== "number" ||
+  typeof stop.lng !== "number"
+){
 
-      continue;
+  continue;
 
-    }
+}
 
 
     if(
@@ -1923,8 +1934,8 @@ function checkAutomaticStops(
         latitude,
         longitude,
 
-        stop.latitude,
-        stop.longitude
+        stop.lat,
+        stop.lng
 
       );
 
@@ -1979,14 +1990,47 @@ simulateBtn.addEventListener(
 
 
     reachedStops.push(
-      nextStop.number
-    );
+  nextStop.number
+);
 
+updateStopDisplays();
 
-    updateStopDisplays();
+// Send reached stop information to Firebase
+set(
+  ref(
+    db,
+    "buses/" + selectedBus
+  ),
+  {
+    busNumber:
+      selectedBus,
 
+    driver:
+      getSelectedBus()?.driver ||
+      "Unknown",
 
-    setDriverStatus(
+    route:
+      "R1",
+
+    reachedStops:
+      reachedStops,
+
+    tracking:
+      true,
+
+    lastUpdated:
+      serverTimestamp()
+  }
+).catch(error => {
+
+  console.error(
+    "Simulation Firebase update error:",
+    error
+  );
+
+});
+  
+setDriverStatus(
 
       "🧪 Simulation: " +
       nextStop.name +
