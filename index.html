@@ -1629,10 +1629,9 @@ async function updateBusInFirebase(
   if(!bus)
     return;
 
-
   try{
 
-    await set(
+    await update(
 
       ref(
         db,
@@ -1670,11 +1669,17 @@ async function updateBusInFirebase(
 
     );
 
+    console.log(
+      "Live GPS location saved:",
+      latitude,
+      longitude
+    );
+
   }
   catch(error){
 
     console.error(
-      "Firebase write error:",
+      "Firebase GPS update error:",
       error
     );
 
@@ -1686,8 +1691,6 @@ async function updateBusInFirebase(
   }
 
 }
-
-
 /* =========================================================
    STUDENT FIREBASE SUBSCRIPTION
 ========================================================= */
