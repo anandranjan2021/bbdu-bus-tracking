@@ -2012,12 +2012,24 @@ simulateBtn.addEventListener(
 
     }
 
-    // Add the next stop locally first
-    reachedStops.push(nextStop.number);
+// Add the next stop locally first
+reachedStops.push(nextStop.number);
 
-    // Immediately update Driver display
-    updateStopDisplays();
+// Record the actual reach time
+stopTimes[nextStop.number] =
+  new Date().toLocaleTimeString(
+    [],
+    {
+      hour: "2-digit",
+      minute: "2-digit"
+    }
+  );
 
+// Immediately update Driver display
+updateStopDisplays();    
+
+
+        
     // Show simulation status
     setDriverStatus(
       "🧪 Simulation: " +
