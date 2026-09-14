@@ -965,11 +965,9 @@ let watchId =
 let currentPosition =
   null;
 
-let reachedStops =
-  [];
-
-let firebaseUnsubscribe =
-  null;
+let reachedStops = [];
+let stopTimes = {};
+let firebaseUnsubscribe = null;
 
 const STOP_RADIUS_METERS =
   150;
@@ -1160,6 +1158,24 @@ function updateStopDisplays(){
       );
 
 
+    // Get recorded reach time
+    const reachTime =
+      stopTimes[stop.number] || "";
+
+
+    // Display text
+    const displayStatus =
+      reached
+      ? "✓ Reached" +
+        (
+          reachTime
+          ? " • 🕐 " + reachTime
+          : ""
+        )
+      : "Upcoming";
+
+
+    // Student display
     if(studentElement){
 
       studentElement.classList.toggle(
@@ -1172,14 +1188,17 @@ function updateStopDisplays(){
           ".stop-status"
         );
 
-      status.textContent =
-        reached ?
-        "✓ Reached" :
-        "Upcoming";
+      if(status){
+
+        status.textContent =
+          displayStatus;
+
+      }
 
     }
 
 
+    // Driver display
     if(driverElement){
 
       driverElement.classList.toggle(
@@ -1192,10 +1211,12 @@ function updateStopDisplays(){
           ".stop-status"
         );
 
-      status.textContent =
-        reached ?
-        "✓ Reached" :
-        "Upcoming";
+      if(status){
+
+        status.textContent =
+          displayStatus;
+
+      }
 
     }
 
@@ -1207,6 +1228,7 @@ function updateStopDisplays(){
 
   const total =
     R1_STOPS.length;
+
 
   document.getElementById(
     "driverProgressText"
@@ -1224,8 +1246,6 @@ function updateStopDisplays(){
     "%";
 
 }
-
-
 /* =========================================================
    USER MODE
 ========================================================= */
