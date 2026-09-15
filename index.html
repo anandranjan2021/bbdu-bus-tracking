@@ -1004,6 +1004,11 @@ let reachedStops = [];
 let stopTimes = {};
 let firebaseUnsubscribe = null;
 let journeyDirection = "outbound";
+function getActiveRouteStops() {
+  return journeyDirection === "return"
+    ? [...R1_STOPS].reverse()
+    : R1_STOPS;
+}
 let activeStops = R1_STOPS;
 const STOP_RADIUS_METERS =
   150;
@@ -1209,7 +1214,7 @@ function renderDriverStops(){
 
   container.innerHTML = "";
 
-  R1_STOPS.forEach(stop => {
+  getActiveRouteStops().forEach(stop => {
 
     const div =
       document.createElement("div");
