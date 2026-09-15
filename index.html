@@ -1011,10 +1011,19 @@ function getActiveRouteStops() {
     ? [...R1_STOPS].reverse()
     : R1_STOPS;
 }
+let studentMap = null;
+let studentBusMarker = null;
+let studentMapInitialized = false;
 let activeStops = R1_STOPS;
 const STOP_RADIUS_METERS =
   150;
+/* =========================================================
+   STUDENT LIVE MAP
+========================================================= */
 
+let studentMap = null;
+let studentBusMarker = null;
+let studentMapInitialized = false;
 
 /* =========================================================
    DOM ELEMENTS
@@ -1933,7 +1942,36 @@ async function updateBusInFirebase(
 /* =========================================================
    STUDENT FIREBASE SUBSCRIPTION
 ========================================================= */
+function initializeStudentMap(){
 
+  if(studentMapInitialized){
+    return;
+  }
+
+  const mapElement =
+    document.getElementById("studentMap");
+
+  if(!mapElement){
+    return;
+  }
+
+  studentMap =
+    L.map("studentMap").setView(
+      [26.8467, 80.9462],
+      11
+    );
+
+  L.tileLayer(
+    "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+    {
+      maxZoom: 19,
+      attribution:
+        '&copy; OpenStreetMap contributors'
+    }
+  ).addTo(studentMap);
+
+  studentMapInitialized = true;
+}
 function subscribeToBus(){
 
   if(firebaseUnsubscribe){
@@ -2082,6 +2120,43 @@ updateStopDisplays();
 
       },
 
+      /* LIVE BUS MAP */
+      document.getElementById(
+  "studentLng"
+).textContent =
+  typeof data.longitude ===
+  "number"
+  ?
+  data.longitude.toFixed(6)
+  :
+  "--";
+
+
+/* LIVE BUS MAP */
+
+if(
+  typeof data.latitude === "number" &&
+  typeof data.longitude === "number"
+){
+
+  initializeStudentMap();
+
+  updateStudentBusMarker(
+    data.latitude,
+    data.longitude
+  );
+
+  document.getElementById(
+    "studentMapStatus"
+  ).textContent =
+    "🟢 Live bus location • " +
+    selectedBus;
+
+}
+
+
+},
+  selectedBus;
       error => {
 
         console.error(
