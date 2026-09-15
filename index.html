@@ -1111,14 +1111,22 @@ returnJourneyBtn.addEventListener("click", function(){
 
   journeyDirection = "return";
 
-  // Reverse the complete route sequence
+  // Reverse the complete route
   activeStops = [...R1_STOPS].reverse();
 
+  // Start a fresh return journey
   reachedStops = [];
   stopTimes = {};
 
+  // Rebuild both stop lists in reverse order
+  renderStudentStops();
+  renderDriverStops();
+
+  updateStopDisplays();
+
   setDriverStatus(
-    "🔄 Return Journey started — BBD BUS STAND → Scooter India Chauraha"
+    "🔄 Return Journey started — BBD BUS STAND → Scooter India Chauraha",
+    "live"
   );
 
 });
@@ -1166,7 +1174,7 @@ function renderStudentStops(){
 
   container.innerHTML = "";
 
-  R1_STOPS.forEach(stop => {
+  getActiveRouteStops().forEach(stop => {
 
     const div =
       document.createElement("div");
@@ -2145,12 +2153,7 @@ simulateBtn.addEventListener(
   "click",
   async function(){
 
-    const routeStops =
-  journeyDirection === "return"
-    ? [...R1_STOPS].reverse()
-    : R1_STOPS;
-
-const nextStop = routeStops.find(
+    const nextStop = activeStops.find(
   stop => !reachedStops.includes(stop.number)
 );
 
