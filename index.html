@@ -576,7 +576,14 @@ button:disabled{
             🧪 Simulate Next Stop
 
           </button>
+<div>
+  <button id="returnJourneyBtn"
+          class="warning">
 
+    🔄 Start Return Journey
+
+  </button>
+</div>
         </div>
 
       </div>
@@ -1049,7 +1056,12 @@ const driverLoginBox =
 
 const driverLoginMessage =
   document.getElementById("driverLoginMessage");
+const driverControls =
+  document.querySelector("#driverPanel .controls");
 
+// Hide GPS controls until driver logs in
+driverControls.style.display = "none";
+      
 driverLoginBtn.addEventListener("click", function(){
 
   const password =
@@ -1058,7 +1070,7 @@ driverLoginBtn.addEventListener("click", function(){
   if(password === DRIVER_PASSWORD){
 
     driverLoggedIn = true;
-
+    driverControls.style.display = "grid";
     driverLoginMessage.textContent =
       "✅ Login successful! Driver controls unlocked.";
 
