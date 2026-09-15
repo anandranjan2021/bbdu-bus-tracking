@@ -2140,11 +2140,14 @@ simulateBtn.addEventListener(
   "click",
   async function(){
 
-    const nextStop =
-      R1_STOPS.find(
-        stop =>
-          !reachedStops.includes(stop.number)
-      );
+    const routeStops =
+  journeyDirection === "return"
+    ? [...R1_STOPS].reverse()
+    : R1_STOPS;
+
+const nextStop = routeStops.find(
+  stop => !reachedStops.includes(stop.number)
+);
 
     if(!nextStop){
 
