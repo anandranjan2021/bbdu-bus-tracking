@@ -1763,22 +1763,14 @@ if (!data) {
 } else {
 
   // Receive stop progress from Firebase
-if (!data) {
+// Receive stop progress from Firebase
+reachedStops =
+  Array.isArray(data?.reachedStops)
+  ? data.reachedStops
+  : [];
 
-  reachedStops = [];
-  stopTimes = {};
-
-} else {
-
-  reachedStops =
-    Array.isArray(data.reachedStops)
-    ? data.reachedStops
-    : [];
-
-  stopTimes =
-    data.stopTimes || {};
-
-}
+stopTimes =
+  data?.stopTimes || {};
 
 updateStopDisplays();
 
