@@ -1762,10 +1762,25 @@ if (!data) {
 
 } else {
 
+  // Receive stop progress from Firebase
+if (!data) {
+
+  reachedStops = [];
+  stopTimes = {};
+
+} else {
+
   reachedStops =
     Array.isArray(data.reachedStops)
     ? data.reachedStops
     : [];
+
+  stopTimes =
+    data.stopTimes || {};
+
+}
+
+updateStopDisplays();
 
   stopTimes =
     data.stopTimes || {};
