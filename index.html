@@ -4,8 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>BBD University Bus Tracking System</title>
-  
-  <!-- Leaflet Map CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
   <style>
@@ -126,7 +124,8 @@
     .status.live { background: #e4f7eb; color: #126b39; }
     .status.error { background: #fdeaea; color: #a51d1d; }
     .status.warning { background: #fff4dc; color: #875500; }
-    .hidden { display: none !important; }
+
+    .hidden { display: none; }
 
     .info-grid {
       display: grid;
@@ -221,21 +220,22 @@
       background: #edf3f8;
       border-radius: 12px;
       padding: 15px;
-      margin-top: 12px;
-      text-align: center;
+      margin-top: 15px;
     }
 
     #studentMap {
       width: 100%;
       height: 450px;
-      border-radius: 12px;
+      border-radius: 10px;
+      border: 1px solid #cbd5e1;
       z-index: 1;
     }
 
     .live-bus-icon {
-      font-size: 26px;
+      font-size: 28px;
       text-align: center;
-      line-height: 36px;
+      line-height: 32px;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.35));
     }
 
     .footer {
@@ -257,11 +257,13 @@
     .firebase-dot.online { background: #18a957; }
     .firebase-dot.offline { background: #d22; }
 
-    @media(max-width: 700px) {
-      .stats { grid-template-columns: 1fr; }
-      .controls { grid-template-columns: 1fr; }
-      .info-grid { grid-template-columns: 1fr; }
-      header h1 { font-size: 21px; }
+    @media (max-width: 700px) {
+      .stats, .controls, .info-grid {
+        grid-template-columns: 1fr;
+      }
+      header h1 {
+        font-size: 20px;
+      }
     }
   </style>
 </head>
@@ -274,7 +276,8 @@
 </header>
 
 <div class="container">
-  <!-- DASHBOARD -->
+
+  <!-- DASHBOARD STATS -->
   <div class="stats">
     <div class="stat">
       <strong id="totalBuses">10</strong>
@@ -295,7 +298,7 @@
     <h2>⚙️ System Controls</h2>
     <div class="controls">
       <div>
-        <label>User Mode</label>
+        <label for="userMode">User Mode</label>
         <select id="userMode">
           <option value="student">Student / Passenger</option>
           <option value="driver">Driver</option>
@@ -304,12 +307,12 @@
       </div>
 
       <div>
-        <label>Bus</label>
+        <label for="busSelect">Bus</label>
         <select id="busSelect"></select>
       </div>
 
       <div>
-        <label>Route</label>
+        <label for="routeSelect">Route</label>
         <select id="routeSelect">
           <option value="R1">R1 — Lucknow City → BBDU</option>
         </select>
@@ -321,42 +324,27 @@
   <div id="studentPanel">
     <div class="card">
       <h2>👩‍🎓 Student / Passenger View</h2>
+
       <div id="firebaseStudentStatus" class="status">
         <span class="firebase-dot"></span>
         Connecting to Firebase...
       </div>
 
       <div class="info-grid">
-        <div class="info">
-          <span>Bus</span>
-          <strong id="studentBus">--</strong>
-        </div>
-        <div class="info">
-          <span>Driver</span>
-          <strong id="studentDriver">--</strong>
-        </div>
-        <div class="info">
-          <span>Route</span>
-          <strong id="studentRoute">--</strong>
-        </div>
-        <div class="info">
-          <span>Tracking</span>
-          <strong id="studentTracking">Offline</strong>
-        </div>
-        <div class="info">
-          <span>Latitude</span>
-          <strong id="studentLat">--</strong>
-        </div>
-        <div class="info">
-          <span>Longitude</span>
-          <strong id="studentLng">--</strong>
-        </div>
+        <div class="info"><span>Bus</span><strong id="studentBus">--</strong></div>
+        <div class="info"><span>Driver</span><strong id="studentDriver">--</strong></div>
+        <div class="info"><span>Route</span><strong id="studentRoute">--</strong></div>
+        <div class="info"><span>Tracking</span><strong id="studentTracking">Offline</strong></div>
+        <div class="info"><span>Latitude</span><strong id="studentLat">--</strong></div>
+        <div class="info"><span>Longitude</span><strong id="studentLng">--</strong></div>
       </div>
 
       <div class="map-box">
-        <h3>📍 Live Bus Location</h3>
+        <h3 style="margin-top:0;">📍 Live Bus Location</h3>
         <div id="studentMap"></div>
-        <p id="studentMapStatus">🚌 Waiting for live bus location...</p>
+        <p id="studentMapStatus" style="margin: 8px 0 0; font-size: 13px; color: #475569;">
+          🚌 Initializing map view...
+        </p>
       </div>
     </div>
 
@@ -371,58 +359,34 @@
     <div class="card">
       <h2>🚍 Driver Control Panel</h2>
 
-      <!-- DRIVER LOGIN -->
-      <div id="driverLoginBox" class="card" style="background:#fdfdfd; border:1px solid #e2e8f0;">
+      <div id="driverLoginBox">
         <h3>🔐 Driver Login</h3>
-        <p>Please enter your driver password to access GPS controls.</p>
-        <input type="password" id="driverPassword" placeholder="Enter Driver Password" style="margin:10px 0;">
+        <p style="font-size:14px; color:#475569;">Enter driver password to unlock controls.</p>
+        <input type="password" id="driverPassword" placeholder="Enter Driver Password">
         <button id="driverLoginBtn" class="success">🔓 Login</button>
-        <div id="driverLoginMessage" style="margin-top:10px;"></div>
+        <div id="driverLoginMessage" style="margin-top:10px; font-weight:bold;"></div>
       </div>
 
-      <div id="driverStatus" class="status">
-        GPS is not started.
-      </div>
+      <div id="driverControlsContainer" class="hidden" style="margin-top:15px;">
+        <div id="driverStatus" class="status">GPS is not started.</div>
 
-      <div id="driverActionControls" class="controls" style="display:none;">
-        <div>
+        <div class="controls">
           <button id="startBtn" class="success">📍 Start GPS Tracking</button>
-        </div>
-        <div>
           <button id="stopBtn" class="danger" disabled>⛔ Stop GPS Tracking</button>
-        </div>
-        <div>
           <button id="simulateBtn" class="warning">🧪 Simulate Next Stop</button>
         </div>
-        <div>
+
+        <div style="margin-top:10px;">
           <button id="returnJourneyBtn" class="warning">🔄 Start Return Journey</button>
         </div>
-      </div>
 
-      <div class="info-grid" style="margin-top:15px">
-        <div class="info">
-          <span>Bus Number</span>
-          <strong id="driverBus">--</strong>
-        </div>
-        <div class="info">
-          <span>Driver</span>
-          <strong id="driverName">--</strong>
-        </div>
-        <div class="info">
-          <span>Latitude</span>
-          <strong id="driverLat">--</strong>
-        </div>
-        <div class="info">
-          <span>Longitude</span>
-          <strong id="driverLng">--</strong>
-        </div>
-        <div class="info">
-          <span>GPS Accuracy</span>
-          <strong id="driverAccuracy">--</strong>
-        </div>
-        <div class="info">
-          <span>Last Update</span>
-          <strong id="driverUpdated">--</strong>
+        <div class="info-grid" style="margin-top:15px">
+          <div class="info"><span>Bus Number</span><strong id="driverBus">--</strong></div>
+          <div class="info"><span>Driver</span><strong id="driverName">--</strong></div>
+          <div class="info"><span>Latitude</span><strong id="driverLat">--</strong></div>
+          <div class="info"><span>Longitude</span><strong id="driverLng">--</strong></div>
+          <div class="info"><span>GPS Accuracy</span><strong id="driverAccuracy">--</strong></div>
+          <div class="info"><span>Last Update</span><strong id="driverUpdated">--</strong></div>
         </div>
       </div>
     </div>
@@ -441,18 +405,10 @@
   <div id="adminPanel" class="hidden">
     <div class="card">
       <h2>🛠️ Transport Admin Dashboard</h2>
-      <div id="firebaseAdminStatus" class="status">
-        Firebase status: Checking...
-      </div>
+      <div id="firebaseAdminStatus" class="status">Firebase status: Checking...</div>
       <div class="info-grid">
-        <div class="info">
-          <span>Total Buses</span>
-          <strong id="adminTotalBuses">10</strong>
-        </div>
-        <div class="info">
-          <span>Active Trips</span>
-          <strong id="adminActiveTrips">0</strong>
-        </div>
+        <div class="info"><span>Total Buses</span><strong id="adminTotalBuses">10</strong></div>
+        <div class="info"><span>Active Trips</span><strong id="adminActiveTrips">0</strong></div>
       </div>
     </div>
 
@@ -462,7 +418,7 @@
       <input id="newBusNumber" placeholder="Example: BBD-11">
       <label style="margin-top:10px">Driver Name</label>
       <input id="newDriverName" placeholder="Example: Driver 11">
-      <button id="addBusBtn" class="primary">Add Bus</button>
+      <button id="addBusBtn" class="primary" style="margin-top:12px;">Add Bus</button>
     </div>
 
     <div class="card">
@@ -470,24 +426,20 @@
       <div id="fleetList"></div>
     </div>
   </div>
+
 </div>
 
 <div class="footer">
   BBD University Bus Tracking System<br>
-  Version 2.1 • Production Ready
+  Version 2.2 • Leaflet Engine Integrated
 </div>
 
-<!-- Leaflet Library -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-<!-- Main App Module -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
 import { getDatabase, ref, set, update, onValue, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-database.js";
 
-/* =========================================================
-   FIREBASE CONFIGURATION
-========================================================= */
 const firebaseConfig = {
   apiKey: "AIzaSyCYxKkVwjPg34LZAUMpy2JVUEwSqoog1gg",
   authDomain: "bbd-university-bus-tracking.firebaseapp.com",
@@ -502,9 +454,6 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app, firebaseConfig.databaseURL);
 
-/* =========================================================
-   R1 ROUTE (31 STOPS)
-========================================================= */
 const R1_STOPS = [
   { name: "Scooter India Chauraha", lat: 26.738629, lng: 80.857254 },
   { name: "Sarojini Nagar", lat: 26.747129, lng: 80.863153 },
@@ -539,13 +488,8 @@ const R1_STOPS = [
   { name: "BBD BUS STAND", lat: 26.889600, lng: 81.057800 }
 ];
 
-R1_STOPS.forEach((stop, index) => {
-  stop.number = index + 1;
-});
+R1_STOPS.forEach((stop, idx) => { stop.number = idx + 1; });
 
-/* =========================================================
-   STATE & VARIABLES
-========================================================= */
 let buses = [];
 for (let i = 1; i <= 10; i++) {
   buses.push({
@@ -569,9 +513,6 @@ let studentMap = null;
 let studentBusMarker = null;
 let studentMapInitialized = false;
 
-/* =========================================================
-   DOM ELEMENTS
-========================================================= */
 const userMode = document.getElementById("userMode");
 const busSelect = document.getElementById("busSelect");
 const studentPanel = document.getElementById("studentPanel");
@@ -588,104 +529,71 @@ const driverPassword = document.getElementById("driverPassword");
 const driverLoginBtn = document.getElementById("driverLoginBtn");
 const driverLoginBox = document.getElementById("driverLoginBox");
 const driverLoginMessage = document.getElementById("driverLoginMessage");
-const driverActionControls = document.getElementById("driverActionControls");
+const driverControlsContainer = document.getElementById("driverControlsContainer");
 
-/* =========================================================
-   MAP INITIALIZATION & MARKER UPDATE
-========================================================= */
 function initializeStudentMap() {
   if (studentMapInitialized) {
     if (studentMap) studentMap.invalidateSize();
     return;
   }
-
   const mapElement = document.getElementById("studentMap");
   if (!mapElement) return;
 
-  studentMap = L.map("studentMap").setView([26.8467, 80.9462], 12);
+  studentMap = L.map("studentMap").setView([26.8889, 81.0589], 12);
 
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     maxZoom: 19,
-    attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a>'
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
   }).addTo(studentMap);
 
+  const routeLatLngs = R1_STOPS.map(s => [s.lat, s.lng]);
+  L.polyline(routeLatLngs, { color: "#1769aa", weight: 4, opacity: 0.7 }).addTo(studentMap);
+
+  R1_STOPS.forEach(stop => {
+    L.circleMarker([stop.lat, stop.lng], {
+      radius: 4,
+      color: "#123c69",
+      fillColor: "#fff",
+      fillOpacity: 1
+    }).addTo(studentMap).bindPopup(`<b>Stop ${stop.number}:</b> ${stop.name}`);
+  });
+
   studentMapInitialized = true;
-  setTimeout(() => {
-    if (studentMap) studentMap.invalidateSize();
-  }, 300);
+  setTimeout(() => { if (studentMap) studentMap.invalidateSize(); }, 300);
 }
 
 function updateStudentBusMarker(latitude, longitude) {
-  if (!studentMapInitialized) {
-    initializeStudentMap();
-  }
-
-  if (!studentMap || typeof latitude !== "number" || typeof longitude !== "number") {
-    return;
-  }
+  if (!studentMapInitialized) initializeStudentMap();
+  if (!studentMap || typeof latitude !== "number" || typeof longitude !== "number") return;
 
   const busIcon = L.divIcon({
     className: "live-bus-icon",
     html: "🚌",
-    iconSize: [36, 36],
-    iconAnchor: [18, 18]
+    iconSize: [32, 32],
+    iconAnchor: [16, 16]
   });
 
   if (!studentBusMarker) {
     studentBusMarker = L.marker([latitude, longitude], { icon: busIcon }).addTo(studentMap);
-    studentBusMarker.bindPopup(`<b>🚌 ${selectedBus}</b><br>Live Bus Location`);
+    studentBusMarker.bindPopup(`<b>${selectedBus}</b><br>Live Location`);
     studentMap.setView([latitude, longitude], 14);
   } else {
     studentBusMarker.setLatLng([latitude, longitude]);
-    studentBusMarker.getPopup().setContent(`<b>🚌 ${selectedBus}</b><br>Live Bus Location`);
+    studentBusMarker.setPopupContent(`<b>${selectedBus}</b><br>Live Location`);
   }
 }
 
-/* =========================================================
-   DRIVER AUTH & JOURNEY
-========================================================= */
-driverLoginBtn.addEventListener("click", () => {
-  const password = driverPassword.value.trim();
-  if (password === DRIVER_PASSWORD) {
-    driverLoggedIn = true;
-    driverActionControls.style.display = "grid";
-    driverLoginMessage.textContent = "✅ Login successful! Driver controls unlocked.";
-    driverLoginMessage.style.color = "green";
-    driverLoginBox.style.display = "none";
-  } else {
-    driverLoginMessage.textContent = "❌ Incorrect password. Please try again.";
-    driverLoginMessage.style.color = "red";
-    driverPassword.value = "";
-    driverPassword.focus();
-  }
-});
-
-returnJourneyBtn.addEventListener("click", () => {
-  if (!driverLoggedIn) return;
-  journeyDirection = "return";
-  activeStops = [...R1_STOPS].reverse();
-  reachedStops = [];
-  stopTimes = {};
-  renderStudentStops();
-  renderDriverStops();
-  updateStopDisplays();
-  setDriverStatus("🔄 Return Journey started — BBD BUS STAND → Scooter India", "live");
-});
-
-/* =========================================================
-   STOP RENDERING & PROGRESS
-========================================================= */
 function getActiveRouteStops() {
-  return activeStops;
+  return journeyDirection === "return" ? [...R1_STOPS].reverse() : R1_STOPS;
 }
 
 function renderBusOptions() {
   busSelect.innerHTML = "";
   buses.forEach(bus => {
-    const option = document.createElement("option");
-    option.value = bus.busNumber;
-    option.textContent = `${bus.busNumber} — ${bus.driver}`;
-    busSelect.appendChild(option);
+    const opt = document.createElement("option");
+    opt.value = bus.busNumber;
+    opt.textContent = `${bus.busNumber} — ${bus.driver}`;
+    busSelect.appendChild(opt);
   });
   busSelect.value = selectedBus;
 }
@@ -696,7 +604,7 @@ function renderStudentStops() {
   getActiveRouteStops().forEach(stop => {
     const div = document.createElement("div");
     div.className = "stop";
-    div.id = `student-stop-${stop.number}`;
+    div.id = "student-stop-" + stop.number;
     div.innerHTML = `
       <div class="stop-number">${stop.number}</div>
       <div class="stop-name">${stop.name}</div>
@@ -712,7 +620,7 @@ function renderDriverStops() {
   getActiveRouteStops().forEach(stop => {
     const div = document.createElement("div");
     div.className = "stop";
-    div.id = `driver-stop-${stop.number}`;
+    div.id = "driver-stop-" + stop.number;
     div.innerHTML = `
       <div class="stop-number">${stop.number}</div>
       <div class="stop-name">${stop.name}</div>
@@ -726,63 +634,70 @@ function updateStopDisplays() {
   R1_STOPS.forEach(stop => {
     const reached = reachedStops.includes(stop.number);
     const reachTime = stopTimes[stop.number] || "";
-    const displayStatus = reached ? `✓ Reached ${reachTime ? '• 🕐 ' + reachTime : ''}` : "Upcoming";
+    const displayStatus = reached ? `✓ Reached ${reachTime ? '• ' + reachTime : ''}` : "Upcoming";
 
-    const studentElem = document.getElementById(`student-stop-${stop.number}`);
-    if (studentElem) {
-      studentElem.classList.toggle("reached", reached);
-      const status = studentElem.querySelector(".stop-status");
-      if (status) status.textContent = displayStatus;
+    const sEl = document.getElementById("student-stop-" + stop.number);
+    if (sEl) {
+      sEl.classList.toggle("reached", reached);
+      const st = sEl.querySelector(".stop-status");
+      if (st) st.textContent = displayStatus;
     }
 
-    const driverElem = document.getElementById(`driver-stop-${stop.number}`);
-    if (driverElem) {
-      driverElem.classList.toggle("reached", reached);
-      const status = driverElem.querySelector(".stop-status");
-      if (status) status.textContent = displayStatus;
+    const dEl = document.getElementById("driver-stop-" + stop.number);
+    if (dEl) {
+      dEl.classList.toggle("reached", reached);
+      const dt = dEl.querySelector(".stop-status");
+      if (dt) dt.textContent = displayStatus;
     }
   });
 
   const count = reachedStops.length;
   const total = R1_STOPS.length;
   document.getElementById("driverProgressText").textContent = `${count} / ${total} stops reached`;
-  document.getElementById("progressBar").style.width = `${(count / total) * 100}%`;
+  document.getElementById("progressBar").style.width = ((count / total) * 100) + "%";
 }
 
-/* =========================================================
-   USER MODE & BUS CHANGE HANDLERS
-========================================================= */
-userMode.addEventListener("change", function() {
-  const mode = this.value;
-  studentPanel.classList.add("hidden");
-  driverPanel.classList.add("hidden");
-  adminPanel.classList.add("hidden");
-
-  if (mode === "student") {
-    studentPanel.classList.remove("hidden");
-    initializeStudentMap();
-    subscribeToBus();
-  } else if (mode === "driver") {
-    driverPanel.classList.remove("hidden");
-    updateDriverInformation();
-  } else if (mode === "admin") {
-    adminPanel.classList.remove("hidden");
-    renderFleet();
+function subscribeToBus() {
+  if (firebaseUnsubscribe) {
+    firebaseUnsubscribe();
+    firebaseUnsubscribe = null;
   }
-});
 
-busSelect.addEventListener("change", function() {
-  selectedBus = this.value;
-  reachedStops = [];
-  stopTimes = {};
-  if (studentBusMarker && studentMap) {
-    studentMap.removeLayer(studentBusMarker);
-    studentBusMarker = null;
-  }
-  updateStopDisplays();
-  updateDriverInformation();
-  subscribeToBus();
-});
+  const busRef = ref(db, "buses/" + selectedBus);
+  firebaseUnsubscribe = onValue(busRef, snapshot => {
+    const data = snapshot.val();
+
+    if (!data) {
+      reachedStops = [];
+      stopTimes = {};
+      updateStopDisplays();
+      document.getElementById("firebaseStudentStatus").innerHTML = `<span class="firebase-dot offline"></span> No live data for ${selectedBus}`;
+      document.getElementById("studentTracking").textContent = "Offline";
+      document.getElementById("studentMapStatus").textContent = `Waiting for ${selectedBus} to broadcast location...`;
+      return;
+    }
+
+    reachedStops = Array.isArray(data.reachedStops) ? data.reachedStops : [];
+    stopTimes = data.stopTimes || {};
+    updateStopDisplays();
+
+    document.getElementById("firebaseStudentStatus").innerHTML = `<span class="firebase-dot online"></span> Firebase Connected • Live data stream active`;
+    document.getElementById("studentBus").textContent = data.busNumber || selectedBus;
+    document.getElementById("studentDriver").textContent = data.driver || "--";
+    document.getElementById("studentRoute").textContent = data.route || "R1";
+    document.getElementById("studentTracking").textContent = data.tracking ? "🟢 LIVE" : "Offline";
+    document.getElementById("studentLat").textContent = typeof data.latitude === "number" ? data.latitude.toFixed(6) : "--";
+    document.getElementById("studentLng").textContent = typeof data.longitude === "number" ? data.longitude.toFixed(6) : "--";
+
+    if (typeof data.latitude === "number" && typeof data.longitude === "number") {
+      updateStudentBusMarker(data.latitude, data.longitude);
+      document.getElementById("studentMapStatus").textContent = `🟢 Live location receiving for ${selectedBus}`;
+    }
+  }, error => {
+    console.error("Firebase read error:", error);
+    document.getElementById("firebaseStudentStatus").innerHTML = `<span class="firebase-dot offline"></span> Firebase connection error`;
+  });
+}
 
 function getSelectedBus() {
   return buses.find(b => b.busNumber === selectedBus);
@@ -795,43 +710,31 @@ function updateDriverInformation() {
   document.getElementById("driverName").textContent = bus.driver;
 }
 
-function setDriverStatus(message, type = "") {
-  const element = document.getElementById("driverStatus");
-  element.textContent = message;
-  element.className = "status " + type;
+function setDriverStatus(msg, type = "") {
+  const el = document.getElementById("driverStatus");
+  el.textContent = msg;
+  el.className = "status " + type;
 }
 
-/* =========================================================
-   GEOLOCATION & FIREBASE PUSH
-========================================================= */
 function distanceMeters(lat1, lon1, lat2, lon2) {
   const R = 6371000;
   const p1 = lat1 * Math.PI / 180;
   const p2 = lat2 * Math.PI / 180;
   const dLat = (lat2 - lat1) * Math.PI / 180;
   const dLon = (lon2 - lon1) * Math.PI / 180;
-  const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-            Math.cos(p1) * Math.cos(p2) *
-            Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  const a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(p1) * Math.cos(p2) * Math.sin(dLon/2) * Math.sin(dLon/2);
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
-function checkAutomaticStops(latitude, longitude) {
-  const routeStops = getActiveRouteStops();
-  const nextStop = routeStops.find(stop => !reachedStops.includes(stop.number));
+function checkAutomaticStops(lat, lng) {
+  const nextStop = getActiveRouteStops().find(s => !reachedStops.includes(s.number));
+  if (!nextStop) return;
 
-  if (!nextStop) {
-    setDriverStatus("🎉 All stops reached.", "live");
-    return;
-  }
-
-  const distance = distanceMeters(latitude, longitude, nextStop.lat, nextStop.lng);
-  if (distance <= STOP_RADIUS_METERS) {
+  const d = distanceMeters(lat, lng, nextStop.lat, nextStop.lng);
+  if (d <= STOP_RADIUS_METERS) {
     reachedStops.push(nextStop.number);
     stopTimes[nextStop.number] = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
     updateStopDisplays();
-    setDriverStatus(`📍 Stop ${nextStop.number} — ${nextStop.name} reached.`, "live");
-
     update(ref(db, "buses/" + selectedBus), {
       reachedStops: [...reachedStops],
       stopTimes: { ...stopTimes },
@@ -841,42 +744,60 @@ function checkAutomaticStops(latitude, longitude) {
   }
 }
 
-function handlePosition(position) {
-  const lat = position.coords.latitude;
-  const lng = position.coords.longitude;
-  const accuracy = position.coords.accuracy;
+async function updateBusInFirebase(latitude, longitude, accuracy) {
+  const bus = getSelectedBus();
+  if (!bus) return;
+
+  try {
+    await update(ref(db, "buses/" + selectedBus), {
+      busNumber: bus.busNumber,
+      driver: bus.driver,
+      route: "R1",
+      latitude: latitude,
+      longitude: longitude,
+      accuracy: accuracy,
+      tracking: true,
+      lastUpdated: serverTimestamp()
+    });
+  } catch (err) {
+    console.error("Firebase update error:", err);
+    setDriverStatus("Firebase update failed", "error");
+  }
+}
+
+function handlePosition(pos) {
+  const lat = pos.coords.latitude;
+  const lng = pos.coords.longitude;
+  const acc = pos.coords.accuracy;
 
   document.getElementById("driverLat").textContent = lat.toFixed(6);
   document.getElementById("driverLng").textContent = lng.toFixed(6);
-  document.getElementById("driverAccuracy").textContent = Math.round(accuracy) + " meters";
+  document.getElementById("driverAccuracy").textContent = Math.round(acc) + " m";
   document.getElementById("driverUpdated").textContent = new Date().toLocaleTimeString();
 
-  setDriverStatus(`🟢 GPS Live • Accuracy: ${Math.round(accuracy)}m`, "live");
-
-  updateBusInFirebase(lat, lng, accuracy);
+  setDriverStatus(`🟢 GPS Live (Accuracy: ${Math.round(acc)}m)`, "live");
+  updateBusInFirebase(lat, lng, acc);
   checkAutomaticStops(lat, lng);
 }
 
-function handleGpsError(error) {
-  let message = "⚠️ GPS error.";
-  if (error.code === 1) message = "⚠️ Location permission denied. Please allow access.";
-  else if (error.code === 2) message = "⚠️ Location unavailable. Enable phone GPS.";
-  else if (error.code === 3) message = "⚠️ Location request timed out.";
-  setDriverStatus(message, "error");
+function handleGpsError(err) {
+  const msgs = {
+    1: "⚠️ Location permission denied. Please allow access.",
+    2: "⚠️ Location unavailable.",
+    3: "⚠️ GPS request timed out."
+  };
+  setDriverStatus(msgs[err.code] || "GPS error", "error");
 }
 
 function startTracking() {
   if (!navigator.geolocation) {
-    setDriverStatus("GPS is not supported by this browser.", "error");
+    setDriverStatus("Geolocation is not supported by your browser.", "error");
     return;
   }
-  if (tracking) return;
-
   tracking = true;
   startBtn.disabled = true;
   stopBtn.disabled = false;
-  setDriverStatus("Requesting GPS permission...");
-
+  setDriverStatus("Acquiring GPS lock...", "warning");
   watchId = navigator.geolocation.watchPosition(handlePosition, handleGpsError, {
     enableHighAccuracy: true,
     maximumAge: 0,
@@ -894,127 +815,96 @@ async function stopTracking() {
   stopBtn.disabled = true;
   setDriverStatus("GPS tracking stopped.", "warning");
 
-  try {
-    await update(ref(db, "buses/" + selectedBus), {
-      tracking: false,
-      lastUpdated: serverTimestamp()
-    });
-  } catch (error) {
-    console.error("Error stopping tracking in Firebase:", error);
-  }
-}
-
-async function updateBusInFirebase(lat, lng, accuracy) {
-  const bus = getSelectedBus();
-  if (!bus) return;
-
-  try {
-    await update(ref(db, "buses/" + selectedBus), {
-      busNumber: bus.busNumber,
-      driver: bus.driver,
-      route: "R1",
-      latitude: lat,
-      longitude: lng,
-      accuracy: accuracy,
-      tracking: true,
-      lastUpdated: serverTimestamp()
-    });
-  } catch (error) {
-    console.error("Firebase GPS update error:", error);
-    setDriverStatus("GPS active, but Firebase update failed.", "error");
-  }
-}
-
-/* =========================================================
-   FIREBASE SUBSCRIPTION (STUDENT & PASSENGER VIEW)
-========================================================= */
-function subscribeToBus() {
-  if (firebaseUnsubscribe) {
-    firebaseUnsubscribe();
-    firebaseUnsubscribe = null;
-  }
-
-  const busRef = ref(db, "buses/" + selectedBus);
-  const statusEl = document.getElementById("firebaseStudentStatus");
-
-  firebaseUnsubscribe = onValue(busRef, snapshot => {
-    const data = snapshot.val();
-
-    if (!data) {
-      statusEl.innerHTML = `<span class="firebase-dot offline"></span> No live data for ${selectedBus}`;
-      document.getElementById("studentBus").textContent = selectedBus;
-      document.getElementById("studentDriver").textContent = "--";
-      document.getElementById("studentTracking").textContent = "Offline";
-      document.getElementById("studentLat").textContent = "--";
-      document.getElementById("studentLng").textContent = "--";
-      document.getElementById("studentMapStatus").textContent = "🚌 Waiting for live bus location...";
-      return;
-    }
-
-    statusEl.innerHTML = `<span class="firebase-dot online"></span> Firebase Connected • Live data received`;
-    document.getElementById("studentBus").textContent = data.busNumber || selectedBus;
-    document.getElementById("studentDriver").textContent = data.driver || "--";
-    document.getElementById("studentRoute").textContent = data.route || "R1";
-    document.getElementById("studentTracking").textContent = data.tracking ? "🟢 LIVE" : "Offline";
-    document.getElementById("studentLat").textContent = typeof data.latitude === "number" ? data.latitude.toFixed(6) : "--";
-    document.getElementById("studentLng").textContent = typeof data.longitude === "number" ? data.longitude.toFixed(6) : "--";
-
-    reachedStops = Array.isArray(data.reachedStops) ? data.reachedStops : [];
-    stopTimes = data.stopTimes || {};
-    updateStopDisplays();
-
-    if (typeof data.latitude === "number" && typeof data.longitude === "number") {
-      updateStudentBusMarker(data.latitude, data.longitude);
-      document.getElementById("studentMapStatus").textContent = `🟢 Live bus location • ${selectedBus}`;
-    }
-  }, error => {
-    console.error("Firebase read error:", error);
-    statusEl.innerHTML = `<span class="firebase-dot offline"></span> Firebase connection error`;
+  await update(ref(db, "buses/" + selectedBus), {
+    tracking: false,
+    lastUpdated: serverTimestamp()
   });
 }
 
-/* =========================================================
-   SIMULATION ACTION
-========================================================= */
+driverLoginBtn.addEventListener("click", () => {
+  if (driverPassword.value.trim() === DRIVER_PASSWORD) {
+    driverLoggedIn = true;
+    driverLoginBox.classList.add("hidden");
+    driverControlsContainer.classList.remove("hidden");
+    driverLoginMessage.textContent = "";
+  } else {
+    driverLoginMessage.textContent = "❌ Incorrect Password";
+    driverLoginMessage.style.color = "red";
+  }
+});
+
+returnJourneyBtn.addEventListener("click", () => {
+  if (!driverLoggedIn) return;
+  journeyDirection = "return";
+  activeStops = [...R1_STOPS].reverse();
+  reachedStops = [];
+  stopTimes = {};
+  renderStudentStops();
+  renderDriverStops();
+  updateStopDisplays();
+  setDriverStatus("🔄 Return Journey Activated", "live");
+});
+
 simulateBtn.addEventListener("click", async () => {
   const nextStop = activeStops.find(s => !reachedStops.includes(s.number));
   if (!nextStop) {
-    setDriverStatus("🎉 All stops reached in this direction.", "live");
+    setDriverStatus("🎉 End of route reached", "live");
     return;
   }
 
   reachedStops.push(nextStop.number);
   stopTimes[nextStop.number] = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   updateStopDisplays();
-  setDriverStatus(`🧪 Simulated: Stop ${nextStop.number} (${nextStop.name}) reached.`, "live");
+  setDriverStatus(`🧪 Simulating Stop: ${nextStop.name}`, "live");
 
-  try {
-    await update(ref(db, "buses/" + selectedBus), {
-      busNumber: selectedBus,
-      driver: getSelectedBus()?.driver || "Driver",
-      route: "R1",
-      reachedStops: [...reachedStops],
-      stopTimes: { ...stopTimes },
-      latitude: nextStop.lat,
-      longitude: nextStop.lng,
-      tracking: true,
-      lastUpdated: serverTimestamp()
-    });
-  } catch (err) {
-    console.error("Simulation error:", err);
+  await set(ref(db, "buses/" + selectedBus), {
+    busNumber: selectedBus,
+    driver: getSelectedBus()?.driver || "Driver",
+    route: "R1",
+    latitude: nextStop.lat,
+    longitude: nextStop.lng,
+    reachedStops: [...reachedStops],
+    stopTimes: { ...stopTimes },
+    tracking: true,
+    lastUpdated: serverTimestamp()
+  });
+});
+
+startBtn.addEventListener("click", startTracking);
+stopBtn.addEventListener("click", stopTracking);
+
+userMode.addEventListener("change", function() {
+  studentPanel.classList.add("hidden");
+  driverPanel.classList.add("hidden");
+  adminPanel.classList.add("hidden");
+
+  if (this.value === "student") {
+    studentPanel.classList.remove("hidden");
+    if (studentMap) studentMap.invalidateSize();
+    subscribeToBus();
+  } else if (this.value === "driver") {
+    driverPanel.classList.remove("hidden");
+    updateDriverInformation();
+  } else if (this.value === "admin") {
+    adminPanel.classList.remove("hidden");
+    renderFleet();
   }
 });
 
-/* =========================================================
-   ADMIN PANEL ACTIONS
-========================================================= */
+busSelect.addEventListener("change", function() {
+  selectedBus = this.value;
+  reachedStops = [];
+  stopTimes = {};
+  updateStopDisplays();
+  updateDriverInformation();
+  subscribeToBus();
+});
+
 document.getElementById("addBusBtn").addEventListener("click", () => {
   const num = document.getElementById("newBusNumber").value.trim();
   const drv = document.getElementById("newDriverName").value.trim();
-  if (!num) {
-    alert("Please enter a bus number.");
-    return;
-  }
+  if (!num) return alert("Please enter a valid bus number.");
+
   buses.push({ busNumber: num, driver: drv || "Driver", route: "R1" });
   renderBusOptions();
   renderFleet();
@@ -1026,50 +916,26 @@ document.getElementById("addBusBtn").addEventListener("click", () => {
 function renderFleet() {
   const container = document.getElementById("fleetList");
   container.innerHTML = "";
-
   buses.forEach(b => {
     const row = document.createElement("div");
     row.className = "info";
     row.style.marginBottom = "8px";
-    row.innerHTML = `
-      <strong>🚌 ${b.busNumber}</strong><br>
-      Driver: ${b.driver} | Route: ${b.route}<br>
-      <span id="fleet-${b.busNumber}">Checking status...</span>
-    `;
+    row.innerHTML = `<strong>🚌 ${b.busNumber}</strong><br>Driver: ${b.driver}<br><span id="fleet-${b.busNumber}">Checking...</span>`;
     container.appendChild(row);
 
     onValue(ref(db, "buses/" + b.busNumber), snap => {
       const d = snap.val();
-      const el = document.getElementById(`fleet-${b.busNumber}`);
-      if (el) {
-        el.textContent = d && d.tracking ? "🟢 GPS LIVE" : "⚪ Not tracking";
-      }
+      const el = document.getElementById("fleet-" + b.busNumber);
+      if (el) el.textContent = (d && d.tracking) ? "🟢 GPS LIVE" : "⚪ Offline";
     });
   });
 }
 
-/* =========================================================
-   GLOBAL INITIALIZATION
-========================================================= */
-startBtn.addEventListener("click", startTracking);
-stopBtn.addEventListener("click", stopTracking);
-
-renderBusOptions();
-renderStudentStops();
-renderDriverStops();
-updateDriverInformation();
-updateStopDisplays();
-initializeStudentMap();
-subscribeToBus();
-
-// Global fleet counter
 onValue(ref(db, "buses"), snap => {
   const data = snap.val();
   let active = 0;
   if (data) {
-    Object.values(data).forEach(b => {
-      if (b.tracking === true) active++;
-    });
+    Object.values(data).forEach(b => { if (b && b.tracking) active++; });
   }
   document.getElementById("activeTrips").textContent = active;
   document.getElementById("adminActiveTrips").textContent = active;
@@ -1079,6 +945,14 @@ onValue(ref(db, "buses"), snap => {
 }, () => {
   document.getElementById("firebaseAdminStatus").textContent = "🔴 Firebase connection error";
 });
+
+renderBusOptions();
+renderStudentStops();
+renderDriverStops();
+updateDriverInformation();
+updateStopDisplays();
+initializeStudentMap();
+subscribeToBus();
 </script>
 
 </body>
