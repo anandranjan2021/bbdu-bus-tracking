@@ -1,5 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
+<link
+  rel="stylesheet"
+  href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+/>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport"
@@ -8,7 +12,10 @@
 <title>BBD University Bus Tracking System</title>
 
 <style>
-
+#studentMap{
+  z-index:1;
+  min-height:450px;
+}
 *{
   box-sizing:border-box;
 }
@@ -461,28 +468,23 @@ button:disabled{
 
       <div class="map-box">
 
-        <h3>📍 Live Bus Route</h3>
+  <h3>📍 Live Bus Location</h3>
 
-        <div class="map-route">
+  <div
+    id="studentMap"
+    style="
+      width:100%;
+      height:450px;
+      border-radius:12px;
+      overflow:hidden;
+    ">
+  </div>
 
-          Lucknow City
-          ↓
-          <br>
+  <p id="studentMapStatus">
+    🚌 Waiting for live bus location...
+  </p>
 
-          Airport / Chinhat Corridor
-          ↓
-          <br>
-
-          BBD University
-          🚌
-
-        </div>
-
-        <p>
-          Live geographic map will be added in the next phase.
-        </p>
-
-      </div>
+</div>
 
     </div>
 
@@ -748,7 +750,7 @@ button:disabled{
 
 </div>
 
-
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script type="module">
 
 /* =========================================================
@@ -1538,11 +1540,11 @@ function startTracking(){
 
       {
 
-        enableHighAccuracy:true,
-
-        maximumAge:5000,
-
-        timeout:15000
+        {
+  enableHighAccuracy: true,
+  maximumAge: 0,
+  timeout: 20000
+      }
 
       }
 
@@ -1609,10 +1611,102 @@ function handlePosition(position){
   );
 
 
-  checkAutomaticStops(
-    latitude,
-    longitude
+  function checkAutomaticStops(latitude, longitude){
+
+  const routeStops = getActiveRouteStops();
+
+  // Check only the next stop in the current journey
+  const nextStop = routeStops.find(
+    stop => !reachedStops.includes(stop.number)
   );
+
+  if(!nextStop){
+    setDriverStatus(
+      "🎉 All 31 stops reached.",
+      "live"
+    );
+    return;
+  }
+
+  // Ignore stops without valid coordinates
+  if(
+    typeof nextStop.lat !== "number" ||
+    typeof nextStop.lng !== "number"
+  ){
+    return;
+  }
+
+  const distance = distanceMeters(
+    latitude,
+    longitude,
+    nextStop.lat,
+    nextStop.lng
+  );
+
+  console.log(
+    "Next stop:",
+    nextStop.number,
+    nextStop.name,
+    "Distance:",
+    Math.round(distance),
+    "m"
+  );
+
+  // Stop reached
+  if(distance <= STOP_RADIUS_METERS){
+
+    reachedStops.push(nextStop.number);
+
+    stopTimes[nextStop.number] =
+      new Date().toLocaleTimeString(
+        [],
+        {
+          hour: "2-digit",
+          minute: "2-digit"
+        }
+      );
+
+    updateStopDisplays();
+
+    setDriverStatus(
+      "📍 Stop " +
+      nextStop.number +
+      " — " +
+      nextStop.name +
+      " reached automatically.",
+      "live"
+    );
+
+    // Save stop progress to Firebase
+    update(
+      ref(
+        db,
+        "buses/" + selectedBus
+      ),
+      {
+        reachedStops: [...reachedStops],
+        stopTimes: {...stopTimes},
+        journeyDirection: journeyDirection,
+        lastUpdated: serverTimestamp()
+      }
+    )
+    .then(() => {
+      console.log(
+        "Automatic stop saved:",
+        nextStop.number,
+        nextStop.name
+      );
+    })
+    .catch(error => {
+      console.error(
+        "Automatic stop Firebase error:",
+        error
+      );
+    });
+
+  }
+
+}
 
 }
 
