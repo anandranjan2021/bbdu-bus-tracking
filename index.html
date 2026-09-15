@@ -1409,13 +1409,21 @@ userMode.addEventListener(
 
     if(mode === "student"){
 
-      studentPanel.classList.remove(
-        "hidden"
-      );
+  studentPanel.classList.remove(
+    "hidden"
+  );
 
-      subscribeToBus();
+  setTimeout(() => {
 
-    }
+    initializeStudentMap();
+
+    studentMap.invalidateSize();
+
+  }, 100);
+
+  subscribeToBus();
+
+}
 
 
     if(mode === "driver"){
