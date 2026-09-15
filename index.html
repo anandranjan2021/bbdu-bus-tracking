@@ -1004,6 +1004,7 @@ let reachedStops = [];
 let stopTimes = {};
 let firebaseUnsubscribe = null;
 let journeyDirection = "outbound";
+let activeStops = R1_STOPS;
 const STOP_RADIUS_METERS =
   150;
 
@@ -1104,6 +1105,9 @@ returnJourneyBtn.addEventListener("click", function(){
   }
 
   journeyDirection = "return";
+
+  // Reverse the complete route sequence
+  activeStops = [...R1_STOPS].reverse();
 
   reachedStops = [];
   stopTimes = {};
