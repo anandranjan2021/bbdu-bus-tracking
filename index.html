@@ -507,7 +507,34 @@ button:disabled{
     <div class="card">
 
       <h2>🚍 Driver Control Panel</h2>
+<!-- DRIVER LOGIN -->
+<div id="driverLoginBox" class="card">
+  <h3>🔐 Driver Login</h3>
 
+  <p>
+    Please enter your driver password to access GPS controls.
+  </p>
+
+  <input
+    type="password"
+    id="driverPassword"
+    placeholder="Enter Driver Password"
+    style="width:100%; padding:12px; margin:10px 0;"
+  >
+
+  <button
+    id="driverLoginBtn"
+    class="success"
+    style="width:100%;"
+  >
+    🔓 Login
+  </button>
+
+  <div
+    id="driverLoginMessage"
+    style="margin-top:10px;"
+  ></div>
+</div>
       <div id="driverStatus"
            class="status">
 
@@ -1003,7 +1030,54 @@ const stopBtn =
 
 const simulateBtn =
   document.getElementById("simulateBtn");
+// =========================================================
+// DRIVER LOGIN
+// =========================================================
 
+const DRIVER_PASSWORD = "BBDU2026";
+
+let driverLoggedIn = false;
+
+const driverPassword =
+  document.getElementById("driverPassword");
+
+const driverLoginBtn =
+  document.getElementById("driverLoginBtn");
+
+const driverLoginBox =
+  document.getElementById("driverLoginBox");
+
+const driverLoginMessage =
+  document.getElementById("driverLoginMessage");
+
+driverLoginBtn.addEventListener("click", function(){
+
+  const password =
+    driverPassword.value.trim();
+
+  if(password === DRIVER_PASSWORD){
+
+    driverLoggedIn = true;
+
+    driverLoginMessage.textContent =
+      "✅ Login successful! Driver controls unlocked.";
+
+    driverLoginMessage.style.color = "green";
+
+    driverLoginBox.style.display = "none";
+
+  } else {
+
+    driverLoginMessage.textContent =
+      "❌ Incorrect password. Please try again.";
+
+    driverLoginMessage.style.color = "red";
+
+    driverPassword.value = "";
+    driverPassword.focus();
+  }
+
+});
 
 /* =========================================================
    INITIALIZE BUS DROPDOWN
