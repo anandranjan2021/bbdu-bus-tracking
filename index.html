@@ -1972,6 +1972,62 @@ function initializeStudentMap(){
 
   studentMapInitialized = true;
 }
+function updateStudentBusMarker(
+  latitude,
+  longitude
+){
+
+  if(!studentMapInitialized){
+    initializeStudentMap();
+  }
+
+  if(
+    !studentMap ||
+    typeof latitude !== "number" ||
+    typeof longitude !== "number"
+  ){
+    return;
+  }
+
+  const busIcon =
+    L.divIcon({
+      className: "live-bus-icon",
+      html: "🚌",
+      iconSize: [36,36],
+      iconAnchor: [18,18]
+    });
+
+  if(!studentBusMarker){
+
+    studentBusMarker =
+      L.marker(
+        [latitude, longitude],
+        {
+          icon: busIcon
+        }
+      )
+      .addTo(studentMap);
+
+    studentBusMarker.bindPopup(
+      "🚌 " +
+      selectedBus +
+      "<br>Live Bus Location"
+    );
+
+    studentMap.setView(
+      [latitude, longitude],
+      14
+    );
+
+  }
+  else{
+
+    studentBusMarker.setLatLng(
+      [latitude, longitude]
+    );
+
+  }
+}
 function subscribeToBus(){
 
   if(firebaseUnsubscribe){
