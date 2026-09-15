@@ -1745,10 +1745,24 @@ function subscribeToBus(){
         const data =
           snapshot.val();
 // Receive reached stops from Firebase
-reachedStops =
-  Array.isArray(data?.reachedStops)
-  ? data.reachedStops
-  : [];
+// Receive stop progress from Firebase
+if(!data){
+
+  reachedStops = [];
+  stopTimes = {};
+
+}
+else{
+
+  reachedStops =
+    Array.isArray(data.reachedStops)
+    ? data.reachedStops
+    : [];
+
+  stopTimes =
+    data.stopTimes || {};
+
+}
 
 updateStopDisplays();
 
@@ -2060,10 +2074,13 @@ updateStopDisplays();
             "R1",
 
           reachedStops:
-            [...reachedStops],
+  [...reachedStops],
 
-          tracking:
-            true,
+stopTimes:
+  {...stopTimes},
+
+tracking:
+  true,
 
           lastUpdated:
             serverTimestamp()
