@@ -1010,7 +1010,7 @@ let currentPosition =
 let reachedStops = [];
 let stopTimes = {};
 let firebaseUnsubscribe = null;
-
+let journeyDirection = "outbound";
 const STOP_RADIUS_METERS =
   150;
 
@@ -1045,6 +1045,8 @@ const stopBtn =
 
 const simulateBtn =
   document.getElementById("simulateBtn");
+const returnJourneyBtn =
+  document.getElementById("returnJourneyBtn");
 // =========================================================
 // DRIVER LOGIN
 // =========================================================
@@ -1098,7 +1100,26 @@ driverLoginBtn.addEventListener("click", function(){
   }
 
 });
+// =========================================================
+// START RETURN JOURNEY
+// =========================================================
 
+returnJourneyBtn.addEventListener("click", function(){
+
+  if(!driverLoggedIn){
+    return;
+  }
+
+  journeyDirection = "return";
+
+  reachedStops = [];
+  stopTimes = {};
+
+  setDriverStatus(
+    "🔄 Return Journey started — BBD BUS STAND → Scooter India Chauraha"
+  );
+
+});
 /* =========================================================
    INITIALIZE BUS DROPDOWN
 ========================================================= */
