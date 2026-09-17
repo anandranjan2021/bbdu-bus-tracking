@@ -393,7 +393,7 @@
 
     <div class="card">
       <h2>🛣️ Route Progress</h2>
-      <div id="driverProgressText">0 / 31 stops reached</div>
+      <div id="driverProgressText">0 / 35 stops reached</div>
       <div class="progress">
         <div id="progressBar" class="progress-bar"></div>
       </div>
@@ -455,37 +455,41 @@ const app = initializeApp(firebaseConfig);
 const db = getDatabase(app, firebaseConfig.databaseURL);
 
 const R1_STOPS = [
-  { name: "Scooter India Chauraha", lat: 26.738629, lng: 80.857254 },
-  { name: "Sarojini Nagar", lat: 26.747129, lng: 80.863153 },
-  { name: "Hydel", lat: 26.746306, lng: 80.861409 },
-  { name: "Sainik School", lat: 26.750978, lng: 80.865701 },
-  { name: "Shanti Nagar", lat: 26.758283, lng: 80.870502 },
-  { name: "Nadarganj Chauraha", lat: 26.765962, lng: 80.875301 },
-  { name: "Amausi Metro Station", lat: 26.771456, lng: 80.878654 },
-  { name: "Airport (VIP Terminal) Chauraha", lat: 26.778076, lng: 80.881461 },
-  { name: "Saheedpath Starting Point", lat: 26.775410, lng: 80.890470 },
-  { name: "Chungi", lat: 26.788300, lng: 80.887700 },
-  { name: "Vijay Nagar (Baldikhera)", lat: 26.797000, lng: 80.887500 },
-  { name: "Krishna Nagar Metro Station", lat: 26.794390, lng: 80.891760 },
-  { name: "The Piccadily Lucknow", lat: 26.798568, lng: 80.894509 },
-  { name: "Awadh Chauraha", lat: 26.801969, lng: 80.895995 },
-  { name: "Pakri Ka Pul", lat: 26.801057, lng: 80.913467 },
-  { name: "Eco Garden", lat: 26.809400, lng: 80.919480 },
-  { name: "Command Hospital", lat: 26.824700, lng: 80.981800 },
-  { name: "Loreto Convent College", lat: 26.836920, lng: 80.952130 },
-  { name: "Kalidas Chauraha", lat: 26.845900, lng: 80.957700 },
-  { name: "1090 Chauraha", lat: 26.867600, lng: 81.014400 },
-  { name: "Samta Mulak Chauraha", lat: 26.849510, lng: 80.965670 },
-  { name: "Fun Republic Mall", lat: 26.857990, lng: 80.976220 },
-  { name: "Lohia Park Chauraha", lat: 26.858363, lng: 80.984246 },
-  { name: "Lohiya Hospital", lat: 26.861000, lng: 80.995000 },
-  { name: "High Court Chauraha-2", lat: 26.873600, lng: 81.012630 },
-  { name: "Pari Mata Mandir", lat: 26.857500, lng: 81.009500 },
-  { name: "Chinhat Tiraha", lat: 26.865400, lng: 81.024400 },
-  { name: "Matyari Overbridge", lat: 26.886967, lng: 81.039557 },
-  { name: "BBDU Front Gate", lat: 26.888908, lng: 81.058989 },
-  { name: "BBDU EXIT GATE", lat: 26.889200, lng: 81.058400 },
-  { name: "BBD BUS STAND", lat: 26.889600, lng: 81.057800 }
+  { name: "Scooter India Chauraha", lat: 26.7384149, lng: 80.8573776 },
+  { name: "Sarojini Nagar", lat: 26.7461024, lng: 80.8624249 },
+  { name: "Hydel", lat: 26.7472966, lng: 80.8631543 },
+  { name: "Sainik School", lat: 26.7511078, lng: 80.8656157 },
+  { name: "Shanti Nagar", lat: 26.7551842, lng: 80.8684458 },
+  { name: "Nadarganj Chauraha", lat: 26.7659958, lng: 80.8753343 },
+  { name: "Amausi Metro Station", lat: 26.7714439, lng: 80.8785762 },
+  { name: "Airport (VIP Terminal) Chauraha", lat: 26.7736758, lng: 80.8799156 },
+  { name: "Saheedpath Starting Point", lat: 26.7771086, lng: 80.8819715 },
+  { name: "Chungi", lat: 26.7888226, lng: 80.8884997 },
+  { name: "Vijay Nagar (Baldikhera)", lat: 26.7924807, lng: 80.8905585 },
+  { name: "Krishna Nagar Metro Station", lat: 26.7949302, lng: 80.892006 },
+  { name: "The Piccadily Lucknow", lat: 26.7986609, lng: 80.8939741 },
+  { name: "Power House Chauraha", lat: 26.7890361, lng: 80.9095681 },
+  { name: "Aashiyana Chauraha", lat: 26.7941299, lng: 80.9126048 },
+  { name: "Awadh Charaha", lat: 26.8020398, lng: 80.8961312 },
+  { name: "Pakri Ka Pul", lat: 26.8010369, lng: 80.9131482 },
+  { name: "Eco Garden", lat: 26.8065784, lng: 80.9158386 },
+  { name: "Command Hospital", lat: 26.8184671, lng: 80.9411834 },
+  { name: "Loreto Convent College (VVIP Guest House)", lat: 26.8364233, lng: 80.9507404 },
+  { name: "Kalidas Chauraha", lat: 26.8420681, lng: 80.9519086 },
+  { name: "1090 Chauraha", lat: 26.8510935, lng: 80.9658723 },
+  { name: "Samta Mulak Chauraha", lat: 26.8556343, lng: 80.9720633 },
+  { name: "Fun Republic Mall", lat: 26.8574072, lng: 80.9764711 },
+  { name: "Lohia Park Chauraha", lat: 26.8588704, lng: 80.9848922 },
+  { name: "Vibhuti Khand Flyover", lat: 26.866757, lng: 80.9959607 },
+  { name: "Lohiya Hospital", lat: 26.8684986, lng: 81.0010462 },
+  { name: "High Court Chauraha-2", lat: 26.868379, lng: 81.0070382 },
+  { name: "Pari Mata Mandir", lat: 26.867937, lng: 81.0140124 },
+  { name: "Kathautha Chauraha", lat: 26.8654637, lng: 81.0244257 },
+  { name: "Chinhat Tiraha", lat: 26.8746832, lng: 81.026489 },
+  { name: "Matyari Overbridge", lat: 26.8810437, lng: 81.039725 },
+  { name: "BBDU Front Gate", lat: 26.8885374, lng: 81.0568417 },
+  { name: "BBDU EXIT GATE", lat: 26.8871599, lng: 81.059763 },
+  { name: "BBD BUS STAND", lat: 26.8866975, lng: 81.0588261 }
 ];
 
 R1_STOPS.forEach((stop, idx) => { stop.number = idx + 1; });
@@ -539,7 +543,7 @@ function initializeStudentMap() {
   const mapElement = document.getElementById("studentMap");
   if (!mapElement) return;
 
-  studentMap = L.map("studentMap").setView([26.8889, 81.0589], 12);
+  studentMap = L.map("studentMap").setView([26.8885374, 81.0568417], 12);
 
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     maxZoom: 19,
